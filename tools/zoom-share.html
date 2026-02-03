@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate professional Zoom meeting invitation emails">
+    <title>Zoom Meeting Share | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Zoom Tool Specific Styles */
+        .zoom-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .input-section {
+            margin-bottom: 32px;
+        }
+
+        .parse-btn {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .parsed-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .parsed-fields .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .recipient-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--border-color);
+        }
+
+        .recipient-inputs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .recipient-inputs .form-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Email Template Styling */
+        .email-preview-container {
+            position: sticky;
+            top: 100px;
+        }
+
+        .email-template {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .email-template-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .email-template-header img {
+            height: 40px;
+            max-width: 100%;
+        }
+
+        .email-template-body {
+            padding: 40px 32px;
+            color: #333333;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+
+        .email-greeting {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .email-intro {
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 24px;
+            color: #555;
+        }
+
+        .meeting-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px;
+            margin: 24px 0;
+        }
+
+        .meeting-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .meeting-card-title svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .meeting-detail {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .meeting-detail:last-child {
+            border-bottom: none;
+        }
+
+        .meeting-detail-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .meeting-detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            min-width: 100px;
+        }
+
+        .meeting-detail-value {
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .meeting-detail-value a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .meeting-detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        .join-btn-container {
+            text-align: center;
+            margin: 32px 0 24px;
+        }
+
+        .join-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #ffffff !important;
+            padding: 16px 48px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(var(--primary-rgb), 0.5);
+        }
+
+        .quick-access {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 24px;
+        }
+
+        .quick-access-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .quick-access-value {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #1e293b;
+            word-break: break-all;
+        }
+
+        .email-template-footer {
+            background: #f8fafc;
+            padding: 24px 32px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .footer-company {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .footer-tagline {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1024px) {
+            .parsed-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="theme-vimtra">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="../logos/Vimtra Ventures.png" alt="Company Logo" class="logo-img" id="headerLogo">
+                    <span class="app-title">Custom Tools</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Tools">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </a>
+                <h1>Zoom Meeting Share</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="zoom-container">
+        <div class="two-column">
+            <!-- Left Column: Input Form -->
+            <div class="input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Paste Zoom Invite</h3>
+                    </div>
+
+                    <div class="input-section">
+                        <!-- Company Selector -->
+                        <div class="form-group">
+                            <label class="form-label">Select Company</label>
+                            <div class="company-selector" style="position: relative;">
+                                <select class="company-select form-select" id="companySelect" style="width: 100%;">
+                                    <option value="vimtra">Vimtra Ventures</option>
+                                    <option value="urpan">Urpan Technologies</option>
+                                    <option value="tekcog">Tekcog</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Paste the complete Zoom meeting invitation below:</label>
+                            <textarea class="form-textarea" id="zoomInvite" placeholder="Paste your Zoom meeting invitation here...
+
+Example:
+Jacob B Anto is inviting you to a scheduled Zoom meeting.
+
+Topic: Project Discussion
+Time: Feb 3, 2026 07:30 PM Eastern Time (US and Canada)
+
+Join Zoom Meeting
+https://us02web.zoom.us/j/87133653116?pwd=...
+
+Meeting ID: 871 3365 3116
+Passcode: 240892"></textarea>
+                        </div>
+                        <button class="btn btn-primary parse-btn" onclick="parseZoomInvite()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                <path
+                                    d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z" />
+                            </svg>
+                            Parse Invitation
+                        </button>
+                    </div>
+
+                    <!-- Parsed Fields -->
+                    <div id="parsedSection" class="hidden">
+                        <div class="card-header">
+                            <h3 class="card-title">Meeting Details</h3>
+                        </div>
+
+                        <div class="parsed-fields">
+                            <div class="form-group">
+                                <label class="form-label">Host Name</label>
+                                <input type="text" class="form-input" id="hostName" placeholder="Host name">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Date & Time</label>
+                                <input type="text" class="form-input" id="meetingTime"
+                                    placeholder="Meeting date and time">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Topic / Subject</label>
+                                <input type="text" class="form-input" id="meetingTopic" placeholder="Meeting topic">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Meeting Link</label>
+                                <input type="text" class="form-input" id="meetingLink" placeholder="Zoom meeting URL">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Meeting ID</label>
+                                <input type="text" class="form-input" id="meetingId" placeholder="Meeting ID">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Passcode</label>
+                                <input type="text" class="form-input" id="meetingPasscode" placeholder="Passcode">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Agenda Link (Optional)</label>
+                                <input type="text" class="form-input" id="agendaLink" placeholder="Agenda URL">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">One-Tap Mobile (Optional)</label>
+                                <input type="text" class="form-input" id="oneTapMobile"
+                                    placeholder="One-tap mobile numbers">
+                            </div>
+                        </div>
+
+                        <!-- Recipient Section -->
+                        <div class="recipient-section">
+                            <label class="form-label">Recipient Email(s)</label>
+                            <div class="recipient-inputs">
+                                <input type="email" class="form-input" id="recipientEmail"
+                                    placeholder="recipient@example.com">
+                                <input type="text" class="form-input" id="recipientName"
+                                    placeholder="Recipient Name (optional)">
+                            </div>
+                        </div>
+
+                        <div class="email-actions">
+                            <button class="btn btn-primary" onclick="openInGmail()">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                    <path
+                                        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                </svg>
+                                Open in Gmail
+                            </button>
+                            <button class="btn btn-secondary" onclick="copyEmailContent()">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                    <path
+                                        d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                                </svg>
+                                Copy Email Body
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Email Preview -->
+            <div class="email-preview-container">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="card-header" style="padding: 24px 32px; margin: 0;">
+                        <h3 class="card-title">Email Preview</h3>
+                    </div>
+
+                    <div class="email-template" id="emailPreview">
+                        <!-- Header with Logo -->
+                        <div class="email-template-header">
+                            <img src="../logos/Vimtra Ventures.png" alt="Company Logo" id="emailLogo">
+                        </div>
+
+                        <!-- Body -->
+                        <div class="email-template-body">
+                            <p class="email-greeting">Hello <span id="previewRecipientName">there</span>,</p>
+
+                            <p class="email-intro">
+                                You are invited to join a scheduled Zoom meeting hosted by <strong id="previewHost">the
+                                    organizer</strong>.
+                                Please find the meeting details below.
+                            </p>
+
+                            <!-- Meeting Card -->
+                            <div class="meeting-card">
+                                <div class="meeting-card-title">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+                                    </svg>
+                                    <span id="previewTopic">Meeting Topic</span>
+                                </div>
+
+                                <div class="meeting-detail">
+                                    <img id="previewIconClock" class="meeting-detail-icon" alt="Time">
+                                    <div>
+                                        <div class="meeting-detail-label">Date & Time</div>
+                                        <div class="meeting-detail-value" id="previewTime">Meeting time</div>
+                                    </div>
+                                </div>
+
+                                <div class="meeting-detail">
+                                    <img id="previewIconVideo" class="meeting-detail-icon" alt="ID">
+                                    <div>
+                                        <div class="meeting-detail-label">Meeting ID</div>
+                                        <div class="meeting-detail-value" id="previewId">000 0000 0000</div>
+                                    </div>
+                                </div>
+
+                                <div class="meeting-detail">
+                                    <img id="previewIconKey" class="meeting-detail-icon" alt="Passcode">
+                                    <div>
+                                        <div class="meeting-detail-label">Passcode</div>
+                                        <div class="meeting-detail-value" id="previewPasscode">------</div>
+                                    </div>
+                                </div>
+
+                                <div class="meeting-detail" id="agendaRow" style="display: none;">
+                                    <img id="previewIconAgenda" class="meeting-detail-icon" alt="Agenda">
+                                    <div>
+                                        <div class="meeting-detail-label">Agenda</div>
+                                        <div class="meeting-detail-value"><a href="#" id="previewAgenda"
+                                                target="_blank">View Meeting Agenda</a></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Join Button -->
+                            <div class="join-btn-container">
+                                <a href="#" class="join-btn" id="previewJoinBtn">Join Meeting</a>
+                            </div>
+
+                            <!-- Quick Access -->
+                            <div class="quick-access" id="oneTapRow" style="display: none;">
+                                <div class="quick-access-title">One-Tap Mobile</div>
+                                <div class="quick-access-value" id="previewOneTap"></div>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="email-template-footer">
+                            <div class="footer-company company-name-display">Vimtra Ventures</div>
+                            <div class="footer-tagline">Building Tomorrow, Today</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/company-data.js"></script>
+    <script src="../js/icons-data.js"></script>
+    <script>
+        // Company themes loaded from js/company-data.js
+
+        // Parse Zoom meeting invitation
+        function parseZoomInvite() {
+            const text = document.getElementById('zoomInvite').value;
+
+            if (!text.trim()) {
+                VimtraTools.showToast('Please paste a Zoom invitation first', 'error');
+                return;
+            }
+
+            // Extract host name
+            const hostMatch = text.match(/^(.+?)\s+is inviting you/m);
+            const hostName = hostMatch ? hostMatch[1].trim() : '';
+
+            // Extract topic
+            const topicMatch = text.match(/Topic:\s*(.+?)(?:\n|$)/);
+            const topic = topicMatch ? topicMatch[1].trim() : '';
+
+            // Extract time
+            const timeMatch = text.match(/Time:\s*(.+?)(?:\n|$)/);
+            const time = timeMatch ? timeMatch[1].trim() : '';
+
+            // Extract meeting link
+            const linkMatch = text.match(/Join Zoom Meeting\s*\n(https:\/\/[^\s]+)/);
+            const link = linkMatch ? linkMatch[1].trim() : '';
+
+            // Extract meeting ID
+            const idMatch = text.match(/Meeting ID:\s*(\d[\d\s]+\d)/);
+            const meetingId = idMatch ? idMatch[1].trim() : '';
+
+            // Extract passcode
+            const passcodeMatch = text.match(/Passcode:\s*(\S+)/);
+            const passcode = passcodeMatch ? passcodeMatch[1].trim() : '';
+
+            // Extract agenda link
+            const agendaMatch = text.match(/Meeting agenda\s*\n(https:\/\/[^\s]+)/);
+            const agendaLink = agendaMatch ? agendaMatch[1].trim() : '';
+
+            // Extract one-tap mobile
+            const oneTapMatch = text.match(/One tap mobile\s*\n([\s\S]*?)(?=\n\n|Join instructions|$)/);
+            const oneTap = oneTapMatch ? oneTapMatch[1].trim().replace(/\n/g, ' | ') : '';
+
+            // Populate fields
+            document.getElementById('hostName').value = hostName;
+            document.getElementById('meetingTopic').value = topic;
+            document.getElementById('meetingTime').value = time;
+            document.getElementById('meetingLink').value = link;
+            document.getElementById('meetingId').value = meetingId;
+            document.getElementById('meetingPasscode').value = passcode;
+            document.getElementById('agendaLink').value = agendaLink;
+            document.getElementById('oneTapMobile').value = oneTap;
+
+            // Show parsed section
+            document.getElementById('parsedSection').classList.remove('hidden');
+
+            // Update preview
+            updatePreview();
+
+            VimtraTools.showToast('Meeting details parsed successfully!', 'success');
+        }
+
+        // Update email preview
+        function updatePreview() {
+            const hostName = document.getElementById('hostName').value || 'the organizer';
+            const topic = document.getElementById('meetingTopic').value || 'Zoom Meeting';
+            const time = document.getElementById('meetingTime').value || 'TBD';
+            const link = document.getElementById('meetingLink').value || '#';
+            const meetingId = document.getElementById('meetingId').value || '---';
+            const passcode = document.getElementById('meetingPasscode').value || '---';
+            const agendaLink = document.getElementById('agendaLink').value;
+            const oneTap = document.getElementById('oneTapMobile').value;
+            const recipientName = document.getElementById('recipientName').value || 'there';
+
+            document.getElementById('previewHost').textContent = hostName;
+            document.getElementById('previewTopic').textContent = topic;
+            document.getElementById('previewTime').textContent = time;
+            document.getElementById('previewId').textContent = meetingId;
+            document.getElementById('previewPasscode').textContent = passcode;
+            document.getElementById('previewRecipientName').textContent = recipientName;
+            document.getElementById('previewJoinBtn').href = link;
+
+            // Agenda link
+            const agendaRow = document.getElementById('agendaRow');
+            if (agendaLink) {
+                agendaRow.style.display = 'flex';
+                document.getElementById('previewAgenda').href = agendaLink;
+            } else {
+                agendaRow.style.display = 'none';
+            }
+
+            if (oneTap) {
+                oneTapRow.style.display = 'block';
+                document.getElementById('previewOneTap').textContent = oneTap;
+            } else {
+                oneTapRow.style.display = 'none';
+            }
+
+            // Update Header Background
+            const companyKey = document.getElementById('companySelect').value;
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            document.querySelector('.email-template-header').style.background = theme.light;
+        }
+
+        // Add input listeners for live preview
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+
+            // Re-render when company changes
+            const companySelect = document.getElementById('companySelect');
+            if (companySelect) {
+                companySelect.addEventListener('change', updatePreview);
+            }
+
+            // Initialize Icons
+            document.getElementById('previewIconClock').src = EMAIL_ICONS.clock;
+            document.getElementById('previewIconVideo').src = EMAIL_ICONS.video;
+            document.getElementById('previewIconKey').src = EMAIL_ICONS.key;
+            document.getElementById('previewIconAgenda').src = EMAIL_ICONS.agenda;
+        });
+
+        // Generate Rich HTML Email Content with Inline Styles
+        function generateRichHtml() {
+            const companyKey = document.getElementById('companySelect').value;
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+
+            // Get values
+            const hostName = document.getElementById('hostName').value || 'the organizer';
+            const topic = document.getElementById('meetingTopic').value || 'Zoom Meeting';
+            const time = document.getElementById('meetingTime').value || 'TBD';
+            const link = document.getElementById('meetingLink').value || '#';
+            const meetingId = document.getElementById('meetingId').value || '---';
+            const passcode = document.getElementById('meetingPasscode').value || '---';
+            const agendaLink = document.getElementById('agendaLink').value;
+            const oneTap = document.getElementById('oneTapMobile').value;
+            const recipientName = document.getElementById('recipientName').value || 'there';
+
+            // Construct Rows
+            let agendaHtml = '';
+            if (agendaLink) {
+                agendaHtml = `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 12px 0; vertical-align: middle;">
+                        <img src="${EMAIL_ICONS.agenda}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">AGENDA</span>
+                    </td>
+                    <td style="padding: 12px 0;">
+                        <a href="${agendaLink}" style="color: ${theme.primary}; text-decoration: none; font-size: 14px; font-weight: 500;">View Meeting Agenda</a>
+                    </td>
+                </tr>`;
+            }
+
+            let oneTapHtml = '';
+            if (oneTap) {
+                oneTapHtml = `
+                <div style="background: #f8fafc; border-radius: 8px; padding: 16px 20px; margin-top: 24px;">
+                    <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; margin-bottom: 8px;">ONE-TAP MOBILE</div>
+                    <div style="font-family: 'Courier New', monospace; font-size: 13px; color: #1e293b; line-height: 1.5;">${oneTap}</div>
+                </div>`;
+            }
+
+            // Return full HTML string (DIV ONLY, NO HTML/BODY TAGS)
+            return `
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Inter', Arial, sans-serif;">
+        <!-- Header -->
+        <div style="background: ${theme.light}; padding: 30px; text-align: center;">
+            <img src="${theme.logoData}" alt="${company.name}" style="height: 40px; max-width: 100%;">
+        </div>
+        
+        <!-- Body -->
+        <div style="padding: 40px 32px;">
+            <p style="font-size: 16px; margin-bottom: 20px; color: #333333;">Hello ${recipientName},</p>
+            <p style="font-size: 14px; line-height: 1.6; margin-bottom: 24px; color: #555555;">
+                You are invited to join a scheduled Zoom meeting hosted by <strong>${hostName}</strong>. Please find the meeting details below.
+            </p>
+            
+            <!-- Meeting Card -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 28px; margin: 24px 0;">
+                <div style="font-size: 18px; font-weight: 700; color: ${theme.primary}; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">
+                    ${topic}
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px 0; vertical-align: middle; width: 140px;">
+                            <img src="${EMAIL_ICONS.clock}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">DATE & TIME</span>
+                        </td>
+                        <td style="padding: 12px 0;">
+                            <span style="font-size: 14px; color: #1e293b; font-weight: 500;">${time}</span>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px 0; vertical-align: middle;">
+                            <img src="${EMAIL_ICONS.video}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">MEETING ID</span>
+                        </td>
+                        <td style="padding: 12px 0;">
+                            <span style="font-size: 14px; color: #1e293b; font-weight: 500;">${meetingId}</span>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px 0; vertical-align: middle;">
+                            <img src="${EMAIL_ICONS.key}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">PASSCODE</span>
+                        </td>
+                        <td style="padding: 12px 0;">
+                            <span style="font-size: 14px; color: #1e293b; font-weight: 500;">${passcode}</span>
+                        </td>
+                    </tr>
+                    ${agendaHtml}
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin: 32px 0 24px;">
+                <a href="${link}" style="display: inline-block; background: ${theme.gradient}; color: #ffffff; padding: 16px 48px; border-radius: 50px; font-size: 16px; font-weight: 600; text-decoration: none;">Join Meeting</a>
+            </div>
+            
+            ${oneTapHtml}
+        </div>
+        
+        <!-- Footer -->
+        <div style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+            <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${company.name}</div>
+            <div style="font-size: 12px; color: #64748b;">Building Tomorrow, Today</div>
+        </div>
+    </div>`;
+        }
+
+        // Generate plain text content for Gmail fallback
+        function generatePlainText() {
+            const hostName = document.getElementById('hostName').value || 'the organizer';
+            const topic = document.getElementById('meetingTopic').value || 'Zoom Meeting';
+            const time = document.getElementById('meetingTime').value || 'TBD';
+            const link = document.getElementById('meetingLink').value || '';
+            const meetingId = document.getElementById('meetingId').value || '---';
+            const passcode = document.getElementById('meetingPasscode').value || '---';
+            const recipientName = document.getElementById('recipientName').value || '';
+            const companyKey = document.getElementById('companySelect').value;
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+
+            const greeting = recipientName ? `Hello ${recipientName},` : 'Hello,';
+
+            return {
+                subject: `Zoom Meeting Invitation: ${topic}`,
+                body: `${greeting}
+
+You are invited to join a scheduled Zoom meeting hosted by ${hostName}.
+
+TOPIC: ${topic}
+TIME: ${time}
+
+JOIN ZOOM MEETING:
+${link}
+
+Meeting ID: ${meetingId}
+Passcode: ${passcode}
+
+Best regards,
+${company.name}`
+            };
+        }
+
+        // Open in Gmail (Text Only)
+        function openInGmail() {
+            const email = document.getElementById('recipientEmail').value;
+            const { subject, body } = generatePlainText();
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Opening Gmail (Text Only). For styling: click "Copy Email Body" -> Paste in Gmail.', 'success');
+        }
+
+        // Copy Rich HTML to Clipboard
+        async function copyEmailContent() {
+            try {
+                const htmlContent = generateRichHtml();
+                const textContent = generatePlainText().body;
+
+                const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                const blobText = new Blob([textContent], { type: 'text/plain' });
+                const data = [new ClipboardItem({
+                    'text/html': blobHtml,
+                    'text/plain': blobText
+                })];
+
+                await navigator.clipboard.write(data);
+                VimtraTools.showToast('Formatted email copied! Paste it in Gmail.', 'success');
+            } catch (err) {
+                console.error('Clipboard error:', err);
+                VimtraTools.showToast('Clipboard error. Check console.', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>
