@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate professional email signatures for Vimtra companies">
+    <title>Email Signature Creator | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Signature Tool Specific Styles */
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .input-section {
+            margin-bottom: 32px;
+        }
+
+        .variant-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .variant-option {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .variant-option:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .variant-option.active {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Preview Area */
+        .preview-container {
+            position: sticky;
+            top: 100px;
+        }
+
+        .signature-preview-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px;
+            min-height: 200px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signature-wrapper {
+            width: 100%;
+        }
+
+        .copy-actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 1024px) {
+            .preview-container {
+                position: static;
+                margin-top: 32px;
+            }
+        }
+
+        /* Styled Dropdown */
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px 45px 14px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .form-select:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.08);
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .form-select option {
+            background: #1a1a1f;
+            color: var(--text-primary);
+            padding: 12px;
+        }
+
+        /* Company Social Toggles Panel */
+        .social-toggle-panel {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .social-toggle-panel .form-label {
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .social-toggles {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Custom Checkbox Styling */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(var(--primary-rgb), 0.05);
+            border-color: var(--border-color);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-label input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-label input[type="checkbox"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+        }
+    </style>
+</head>
+
+<body class="theme-vimtra">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="../logos/Vimtra Ventures.png" alt="Company Logo" class="logo-img" id="headerLogo">
+                    <span class="app-title">Custom Tools</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Tools">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </a>
+                <h1>Email Signature Creator</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="tool-container">
+        <div class="two-column">
+            <!-- Left Column: Input Form -->
+            <div class="input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Employee Details</h3>
+                    </div>
+
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label class="form-label">Select Company</label>
+                            <select class="form-select" id="companySelect">
+                                <option value="vimtra">Vimtra Ventures</option>
+                                <option value="urpan">Urpan Technologies</option>
+                                <option value="tekcog">Tekcog</option>
+                                <option value="insight">Insight Intelli</option>
+                                <option value="techmynds">Tech Mynds</option>
+                            </select>
+                        </div>
+
+                        <!-- Company Socials Toggle -->
+                        <div class="form-group social-toggle-panel">
+                            <label class="form-label">Company Social Icons</label>
+                            <div class="social-toggles">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showLinkedin" checked> LinkedIn
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showFacebook" checked> Facebook
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="showInstagram" checked> Instagram
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Variant Style</label>
+                            <div class="variant-selector">
+                                <div class="variant-option active" onclick="setVariant(1)" id="var1">
+                                    Classic
+                                </div>
+                                <div class="variant-option" onclick="setVariant(2)" id="var2">
+                                    Modern
+                                </div>
+                                <div class="variant-option" onclick="setVariant(3)" id="var3">
+                                    Compact
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" id="fullName" placeholder="e.g. John Doe">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Job Title</label>
+                            <input type="text" class="form-input" id="jobTitle"
+                                placeholder="e.g. Senior Project Manager">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" id="email" placeholder="john.doe@company.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Mobile Number (Optional)</label>
+                            <input type="text" class="form-input" id="mobile" placeholder="+1 (555) 123-4567">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Office Number (Optional)</label>
+                            <input type="text" class="form-input" id="phone" placeholder="+1 (555) 987-6543">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Website (Optional)</label>
+                            <input type="text" class="form-input" id="website" placeholder="www.company.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">LinkedIn Profile (Optional)</label>
+                            <input type="text" class="form-input" id="userLinkedin"
+                                placeholder="linkedin.com/in/johndoe">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Address (Optional)</label>
+                            <input type="text" class="form-input" id="address"
+                                placeholder="123 Innovation Dr, Tech City, ST 12345">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="preview-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Signature Preview</h3>
+                    </div>
+
+                    <div class="signature-preview-card">
+                        <div id="signatureWrapper" class="signature-wrapper">
+                            <!-- Signature Code Will Render Here -->
+                        </div>
+                    </div>
+
+                    <div class="copy-actions">
+                        <button class="btn btn-secondary" onclick="copyHtml()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                            Copy HTML
+                        </button>
+                        <button class="btn btn-primary" onclick="copySelect()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                            Select & Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/company-data.js"></script>
+    <script src="../js/icons-data.js"></script>
+    <script>
+        let currentVariant = 1;
+
+        function setVariant(v) {
+            currentVariant = v;
+            document.querySelectorAll('.variant-option').forEach(el => el.classList.remove('active'));
+            document.getElementById('var' + v).classList.add('active');
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const companyKey = document.getElementById('companySelect').value;
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+            const social = companyData.social || {};
+
+            const name = document.getElementById('fullName').value || 'John Doe';
+            const title = document.getElementById('jobTitle').value || 'Senior Manager';
+            const email = document.getElementById('email').value || 'john.doe@' + companyKey + '.com';
+            const mobile = document.getElementById('mobile').value;
+            const phone = document.getElementById('phone').value;
+            const website = document.getElementById('website').value || companyData.website || 'www.' + companyKey + '.com';
+            const address = document.getElementById('address').value || '123 Business Rd, Tech City, ST 12345';
+            const userLinkedin = document.getElementById('userLinkedin').value;
+
+            // Ensure website displays with www. prefix
+            const displayWebsite = website.startsWith('www.') ? website : 'www.' + website;
+
+            // Toggle States
+            const showLinkedin = document.getElementById('showLinkedin').checked;
+            const showFacebook = document.getElementById('showFacebook').checked;
+            const showInstagram = document.getElementById('showInstagram').checked;
+
+            let html = '';
+
+            // Helper for icons (using 16x16 size standard)
+            const iconStyle = "width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;";
+
+            // Social Links Helpers
+            const socialStyle = `text-decoration: none; color: ${theme.primary}; font-size: 12px; margin-right: 10px;`;
+
+            const renderCompanySocials = (showAll = false) => {
+                let links = [];
+                // LinkedIn
+                if (social.linkedin && showLinkedin) links.push(`<a href="${social.linkedin}" style="${socialStyle}">Company LinkedIn</a>`);
+                // Facebook & Instagram (Classic only or if requested)
+                if (showAll) {
+                    if (social.facebook && showFacebook) links.push(`<a href="${social.facebook}" style="${socialStyle}">Facebook</a>`);
+                    if (social.instagram && showInstagram) links.push(`<a href="${social.instagram}" style="${socialStyle}">Instagram</a>`);
+                }
+                return links.join(' | ');
+            };
+
+            const renderUserLinkedin = (iconOnly = false) => {
+                if (!userLinkedin) return '';
+                const url = userLinkedin.startsWith('http') ? userLinkedin : 'https://' + userLinkedin;
+                if (iconOnly) {
+                    return `<td style="border-left: 1px solid #ddd; padding-left: 15px; margin-left: 10px; vertical-align: top;"><a href="${url}" style="text-decoration: none;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 24px; height: 24px;"></a></td>`;
+                }
+                return `<div style="margin-top: 4px;"><a href="${url}" style="${socialStyle}"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="${iconStyle} width: 14px; height: 14px;"> My LinkedIn</a></div>`;
+            };
+
+            if (currentVariant === 1) {
+                // Classic Horizontal
+                html = `
+                <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333;">
+                    <tr>
+                        <td style="padding-right: 25px; border-right: 2px solid ${theme.primary}; vertical-align: top; text-align: center; width: 150px;">
+                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 60px; display: block; margin: 0 auto;">
+                            <!-- Company Socials (Under Logo, Centered) -->
+                            <div style="margin-top: 12px; text-align: center;">
+                                ${social.linkedin && showLinkedin ? `<a href="${social.linkedin}" style="text-decoration: none; display: inline-block; margin: 0 4px;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 18px; height: 18px; vertical-align: middle;"></a>` : ''}
+                                ${social.facebook && showFacebook ? `<a href="${social.facebook}" style="text-decoration: none; display: inline-block; margin: 0 4px;"><img src="${EMAIL_ICONS.facebook}" alt="Facebook" style="width: 18px; height: 18px; vertical-align: middle;"></a>` : ''}
+                                ${social.instagram && showInstagram ? `<a href="${social.instagram}" style="text-decoration: none; display: inline-block; margin: 0 4px;"><img src="${EMAIL_ICONS.instagram}" alt="Instagram" style="width: 18px; height: 18px; vertical-align: middle;"></a>` : ''}
+                            </div>
+                            <!-- Address (Left Column) -->
+                            ${address ? `<div style="margin-top: 14px; color: #777; font-size: 11px; line-height: 1.5; text-align: center; word-wrap: break-word;">${address}</div>` : ''}
+                        </td>
+                        <td style="padding-left: 25px; vertical-align: top;">
+                            <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px;">
+                                <tr>
+                                    <td style="vertical-align: middle; padding-right: 12px;">
+                                        <div style="font-weight: bold; color: ${theme.primary}; font-size: 16px;">${name}</div>
+                                        <div style="color: #666;">${title}</div>
+                                    </td>
+                                    ${userLinkedin ? `<td style="border-left: 1px solid #ddd; padding-left: 12px; vertical-align: middle;"><a href="${userLinkedin.startsWith('http') ? userLinkedin : 'https://' + userLinkedin}" style="text-decoration: none;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 24px; height: 24px;"></a></td>` : ''}
+                                </tr>
+                            </table>
+                            
+                            <div style="font-size: 13px;">
+                                ${mobile ? `<div style="margin-bottom: 6px;"><img src="${EMAIL_ICONS.mobile}" alt="Mobile" style="${iconStyle}"> ${mobile}</div>` : ''}
+                                ${phone ? `<div style="margin-bottom: 6px;"><img src="${EMAIL_ICONS.phone}" alt="Phone" style="${iconStyle}"> ${phone}</div>` : ''}
+                                <div style="margin-bottom: 6px;"><img src="${EMAIL_ICONS.email}" alt="Email" style="${iconStyle}"> <a href="mailto:${email}" style="color: #333; text-decoration: none;">${email}</a></div>
+                                <div><img src="${EMAIL_ICONS.website}" alt="Web" style="${iconStyle}"> <a href="https://${displayWebsite}" style="color: #333; text-decoration: none;">${displayWebsite}</a></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>`;
+            } else if (currentVariant === 2) {
+                // Modern Vertical
+                html = `
+                <table cellpadding="0" cellspacing="0" border="0" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; color: #333;">
+                    <tr>
+                        <td style="padding-bottom: 12px;">
+                            <table cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td style="vertical-align: middle; padding-right: 12px;">
+                                        <div style="font-weight: 700; color: ${theme.primary}; font-size: 18px; letter-spacing: 0.5px;">${name}</div>
+                                        <div style="text-transform: uppercase; font-size: 11px; color: #666; letter-spacing: 1px;">${title}</div>
+                                    </td>
+                                    ${userLinkedin ? `<td style="border-left: 1px solid #ddd; padding-left: 12px; vertical-align: middle;"><a href="${userLinkedin.startsWith('http') ? userLinkedin : 'https://' + userLinkedin}" style="text-decoration: none;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 24px; height: 24px;"></a></td>` : ''}
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 15px;">
+                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 45px; display: block;">
+                        </td>
+                    </tr>
+                     <tr>
+                        <td style="font-size: 13px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px;">
+                            ${mobile ? `<img src="${EMAIL_ICONS.mobile}" alt="M" style="${iconStyle}"> ${mobile} &nbsp; ` : ''}
+                            ${phone ? `<img src="${EMAIL_ICONS.phone}" alt="P" style="${iconStyle}"> ${phone}` : ''}<br>
+                            <img src="${EMAIL_ICONS.email}" alt="E" style="${iconStyle}"> <a href="mailto:${email}" style="color: #555; text-decoration: none;">${email}</a><br>
+                            <img src="${EMAIL_ICONS.website}" alt="W" style="${iconStyle}"> <a href="https://${displayWebsite}" style="color: #555; text-decoration: none;">${displayWebsite}</a>
+                        </td>
+                    </tr>
+                </table>`;
+            } else {
+                // Compact - Clean inline style
+                html = `
+                <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 13px; color: #333;">
+                    <tr>
+                        <td style="vertical-align: middle; padding-right: 12px;">
+                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 40px; display: block;">
+                        </td>
+                        <td style="border-left: 2px solid ${theme.primary}; padding-left: 12px; vertical-align: middle;">
+                            <div style="font-weight: 600; color: ${theme.primary}; font-size: 14px;">
+                                ${name}${userLinkedin ? ` <a href="${userLinkedin.startsWith('http') ? userLinkedin : 'https://' + userLinkedin}" style="text-decoration: none; margin-left: 5px;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 14px; height: 14px; vertical-align: middle;"></a>` : ''}
+                            </div>
+                            <div style="color: #666; font-size: 12px;">${title}</div>
+                            <div style="margin-top: 6px; font-size: 12px;">
+                                <a href="mailto:${email}" style="color: #555; text-decoration: none;"><img src="${EMAIL_ICONS.email}" alt="E" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 3px;">${email}</a>
+                                <span style="color: #ccc; margin: 0 6px;">|</span>
+                                <a href="https://${displayWebsite}" style="color: #555; text-decoration: none;"><img src="${EMAIL_ICONS.website}" alt="W" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 3px;">${displayWebsite}</a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>`;
+            }
+
+            document.getElementById('signatureWrapper').innerHTML = html;
+        }
+
+        function copyHtml() {
+            const html = document.getElementById('signatureWrapper').innerHTML;
+            navigator.clipboard.writeText(html).then(() => {
+                VimtraTools.showToast('HTML copied to clipboard!', 'success');
+            });
+        }
+
+        async function copySelect() {
+            const node = document.getElementById('signatureWrapper');
+
+            // Select the node
+            const range = document.createRange();
+            range.selectNode(node);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                // Try to copy the selection as rich text (this is what works best for Gmail usually)
+                document.execCommand('copy');
+                VimtraTools.showToast('Signature copied! Paste directly into Gmail.', 'success');
+            } catch (err) {
+                console.error('Copy failed', err);
+                VimtraTools.showToast('Copy failed. Try manual selection.', 'error');
+            }
+
+            // Keep selection for visual feedback or clear it? Let's keep it briefly then clear
+            setTimeout(() => {
+                selection.removeAllRanges();
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+
+            const companySelect = document.getElementById('companySelect');
+            if (companySelect) {
+                companySelect.addEventListener('change', updatePreview);
+            }
+
+            // Social toggles
+            ['showLinkedin', 'showFacebook', 'showInstagram'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updatePreview);
+            });
+
+            // Initial render
+            updatePreview();
+        });
+    </script>
+</body>
+
+</html>
