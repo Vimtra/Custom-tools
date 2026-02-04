@@ -7,18 +7,61 @@ const COMPANIES = {
     vimtra: {
         name: 'Vimtra Ventures',
         logo: 'logos/Vimtra Ventures.png',
-        theme: 'theme-vimtra'
+        theme: 'theme-vimtra',
+        website: 'vimtra.com'
     },
     urpan: {
         name: 'Urpan Technologies',
         logo: 'logos/Urpan Technologies.png',
-        theme: 'theme-urpan'
+        theme: 'theme-urpan',
+        website: 'urpantech.com'
     },
     tekcog: {
         name: 'Tekcog',
         logo: 'logos/tekcog.png',
-        theme: 'theme-tekcog'
+        theme: 'theme-tekcog',
+        website: 'tekcog.com'
+    },
+    insight: {
+        name: 'Insight Intelli',
+        logo: 'logos/Insight Intelli.png',
+        theme: 'theme-insight',
+        website: 'insightintelli.com'
+    },
+    techmynds: {
+        name: 'Tech Mynds',
+        logo: 'logos/Tech Mynds 1.png',
+        theme: 'theme-techmynds',
+        website: 'techmyndsinc.com'
     }
+};
+
+// Social Media Configuration
+// Add links here for each company. Leave empty to hide the icon.
+COMPANIES.vimtra.social = {
+    linkedin: 'https://www.linkedin.com/company/vimtra-ventures/',
+    facebook: 'https://www.facebook.com/profile.php?id=100078611386991',
+    instagram: 'https://www.instagram.com/vimtra_ventures/'
+};
+COMPANIES.urpan.social = {
+    linkedin: 'https://www.linkedin.com/company/urpantech/posts/',
+    facebook: 'https://www.facebook.com/urpantechinc',
+    instagram: 'https://www.instagram.com/urpan_technologies/'
+};
+COMPANIES.tekcog.social = {
+    linkedin: '',
+    facebook: '',
+    instagram: ''
+};
+COMPANIES.insight.social = {
+    linkedin: 'https://www.linkedin.com/company/insightintelli-inc./',
+    facebook: 'https://www.facebook.com/insightintelli',
+    instagram: ''
+};
+COMPANIES.techmynds.social = {
+    linkedin: 'https://www.linkedin.com/company/techmyndsinc/',
+    facebook: '',
+    instagram: ''
 };
 
 // Get base path for logos (handles subfolders)
@@ -34,7 +77,7 @@ function getBasePath() {
 function initTheme() {
     const savedCompany = localStorage.getItem('selectedCompany') || 'vimtra';
     setCompany(savedCompany);
-    
+
     // Set dropdown value
     const select = document.getElementById('companySelect');
     if (select) {
@@ -46,37 +89,37 @@ function initTheme() {
 function setCompany(companyKey) {
     const company = COMPANIES[companyKey];
     if (!company) return;
-    
+
     const basePath = getBasePath();
-    
+
     // Update body theme class
     document.body.className = company.theme;
-    
+
     // Update header logo
     const headerLogo = document.getElementById('headerLogo');
     if (headerLogo) {
         headerLogo.src = basePath + company.logo;
         headerLogo.alt = company.name + ' Logo';
     }
-    
+
     // Update email preview logo if exists
     const emailLogo = document.getElementById('emailLogo');
     if (emailLogo) {
         emailLogo.src = basePath + company.logo;
     }
-    
+
     // Update company name displays
     const companyNameElements = document.querySelectorAll('.company-name-display');
     companyNameElements.forEach(el => {
         el.textContent = company.name;
     });
-    
+
     // Save to localStorage
     localStorage.setItem('selectedCompany', companyKey);
-    
+
     // Dispatch custom event for other components
-    window.dispatchEvent(new CustomEvent('companyChanged', { 
-        detail: { company: companyKey, data: company } 
+    window.dispatchEvent(new CustomEvent('companyChanged', {
+        detail: { company: companyKey, data: company }
     }));
 }
 
@@ -89,14 +132,14 @@ function getCurrentCompany() {
 // Company selector change handler
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    
+
     const select = document.getElementById('companySelect');
     if (select) {
         select.addEventListener('change', (e) => {
             setCompany(e.target.value);
         });
     }
-    
+
     // Add fade-in animation delays
     const fadeElements = document.querySelectorAll('.fade-in');
     fadeElements.forEach((el, index) => {
@@ -134,14 +177,14 @@ function showToast(message, type = 'success') {
     `;
     toast.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            ${type === 'success' 
-                ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
-                : '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'}
+            ${type === 'success'
+            ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+            : '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'}
         </svg>
         <span>${message}</span>
     `;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'fadeIn 0.3s ease reverse';
         setTimeout(() => toast.remove(), 300);
