@@ -8,31 +8,36 @@ const COMPANIES = {
         name: 'Vimtra Ventures',
         logo: 'logos/Vimtra Ventures.png',
         theme: 'theme-vimtra',
-        website: 'vimtra.com'
+        website: 'vimtra.com',
+        address: '45 Rockefeller plaza, Suite 2000, New York, 10111, USA'
     },
     urpan: {
         name: 'Urpan Technologies',
         logo: 'logos/Urpan Technologies.png',
         theme: 'theme-urpan',
-        website: 'urpantech.com'
+        website: 'urpantech.com',
+        address: '39355 California Street, #303, Fremont, CA 94538'
     },
     tekcog: {
         name: 'Tekcog',
         logo: 'logos/tekcog.png',
         theme: 'theme-tekcog',
-        website: 'tekcog.com'
+        website: 'tekcog.com',
+        address: '3300 Dallas Parkway, Plano, TX 75093, USA'
     },
     insight: {
         name: 'Insight Intelli',
         logo: 'logos/Insight Intelli.png',
         theme: 'theme-insight',
-        website: 'insightintelli.com'
+        website: 'insightintelli.com',
+        address: '1909 J N Pease Place, Suite 103, Charlotte NC – 28262'
     },
     techmynds: {
         name: 'Tech Mynds',
         logo: 'logos/Tech Mynds 1.png',
         theme: 'theme-techmynds',
-        website: 'techmyndsinc.com'
+        website: 'techmyndsinc.com',
+        address: '1981 J N Pease Pl Ste, 104 Charlotte, NC 28262.'
     }
 };
 
