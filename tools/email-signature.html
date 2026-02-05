@@ -386,7 +386,7 @@
             const mobile = document.getElementById('mobile').value;
             const phone = document.getElementById('phone').value;
             const website = document.getElementById('website').value || companyData.website || 'www.' + companyKey + '.com';
-            const address = document.getElementById('address').value || '123 Business Rd, Tech City, ST 12345';
+            const address = document.getElementById('address').value || companyData.address || '';
             const userLinkedin = document.getElementById('userLinkedin').value;
 
             // Ensure website displays with www. prefix
@@ -426,13 +426,16 @@
                 return `<div style="margin-top: 4px;"><a href="${url}" style="${socialStyle}"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="${iconStyle} width: 14px; height: 14px;"> My LinkedIn</a></div>`;
             };
 
+            // Logo Selection (Signature specific or default)
+            const logoSrc = theme.logoDataSignature || theme.logoData;
+
             if (currentVariant === 1) {
                 // Classic Horizontal
                 html = `
-                <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333;">
+                <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333;">
                     <tr>
-                        <td style="padding-right: 25px; border-right: 2px solid ${theme.primary}; vertical-align: top; text-align: center; width: 150px;">
-                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 60px; display: block; margin: 0 auto;">
+                        <td style="padding-right: 8px; border-right: 2px solid ${theme.primary}; vertical-align: top; text-align: center;">
+                            <img src="${logoSrc}" alt="${companyData.name}" style="height: 60px; display: block; margin: 0 auto;">
                             <!-- Company Socials (Under Logo, Centered) -->
                             <div style="margin-top: 12px; text-align: center;">
                                 ${social.linkedin && showLinkedin ? `<a href="${social.linkedin}" style="text-decoration: none; display: inline-block; margin: 0 4px;"><img src="${EMAIL_ICONS.linkedin}" alt="LinkedIn" style="width: 18px; height: 18px; vertical-align: middle;"></a>` : ''}
@@ -440,9 +443,9 @@
                                 ${social.instagram && showInstagram ? `<a href="${social.instagram}" style="text-decoration: none; display: inline-block; margin: 0 4px;"><img src="${EMAIL_ICONS.instagram}" alt="Instagram" style="width: 18px; height: 18px; vertical-align: middle;"></a>` : ''}
                             </div>
                             <!-- Address (Left Column) -->
-                            ${address ? `<div style="margin-top: 14px; color: #777; font-size: 11px; line-height: 1.5; text-align: center; word-wrap: break-word;">${address}</div>` : ''}
+                            ${address ? `<div style="margin-top: 14px; max-width: 150px; margin-left: auto; margin-right: auto; color: #777; font-size: 11px; line-height: 1.5; text-align: center; word-wrap: break-word;">${address}</div>` : ''}
                         </td>
-                        <td style="padding-left: 25px; vertical-align: top;">
+                        <td style="padding-left: 12px; vertical-align: top;">
                             <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px;">
                                 <tr>
                                     <td style="vertical-align: middle; padding-right: 12px;">
@@ -481,7 +484,7 @@
                     </tr>
                     <tr>
                         <td style="padding-bottom: 15px;">
-                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 45px; display: block;">
+                            <img src="${logoSrc}" alt="${companyData.name}" style="height: 45px; display: block;">
                         </td>
                     </tr>
                      <tr>
@@ -499,7 +502,7 @@
                 <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 13px; color: #333;">
                     <tr>
                         <td style="vertical-align: middle; padding-right: 12px;">
-                            <img src="${theme.logoData}" alt="${companyData.name}" style="height: 40px; display: block;">
+                            <img src="${logoSrc}" alt="${companyData.name}" style="height: 40px; display: block;">
                         </td>
                         <td style="border-left: 2px solid ${theme.primary}; padding-left: 12px; vertical-align: middle;">
                             <div style="font-weight: 600; color: ${theme.primary}; font-size: 14px;">

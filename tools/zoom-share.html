@@ -526,7 +526,8 @@ Passcode: 240892"></textarea>
                         <!-- Footer -->
                         <div class="email-template-footer">
                             <div class="footer-company company-name-display">Vimtra Ventures</div>
-                            <div class="footer-tagline">Building Tomorrow, Today</div>
+                            <div class="footer-tagline">&copy; <span id="copyrightYear">2026</span> <span
+                                    class="company-name-footer">Vimtra Ventures</span>. All Rights Reserved.</div>
                         </div>
                     </div>
                 </div>
@@ -639,7 +640,27 @@ Passcode: 240892"></textarea>
             // Update Header Background
             const companyKey = document.getElementById('companySelect').value;
             const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
             document.querySelector('.email-template-header').style.background = theme.light;
+
+            // Update Logo
+            const emailLogo = document.getElementById('emailLogo');
+            if (emailLogo && theme.logoData) {
+                emailLogo.src = theme.logoData;
+                emailLogo.alt = companyData.name;
+            }
+
+            // Update Footer Company Name (Top line)
+            const footerCompany = document.querySelector('.footer-company');
+            if (footerCompany) {
+                footerCompany.textContent = companyData.name;
+            }
+
+            // Update Footer Copyright Company Name
+            const footerCopyrightCompany = document.querySelector('.company-name-footer');
+            if (footerCopyrightCompany) {
+                footerCopyrightCompany.textContent = companyData.name;
+            }
         }
 
         // Add input listeners for live preview
@@ -727,7 +748,7 @@ Passcode: 240892"></textarea>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 12px 0; vertical-align: middle; width: 140px;">
-                            <img src="${EMAIL_ICONS.clock}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <img src="${EMAIL_ICONS.clock}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 18px; position: relative; top: -1px;">
                             <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">DATE & TIME</span>
                         </td>
                         <td style="padding: 12px 0;">
@@ -736,7 +757,7 @@ Passcode: 240892"></textarea>
                     </tr>
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 12px 0; vertical-align: middle;">
-                            <img src="${EMAIL_ICONS.video}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <img src="${EMAIL_ICONS.video}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 18px; position: relative; top: -1px;">
                             <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">MEETING ID</span>
                         </td>
                         <td style="padding: 12px 0;">
@@ -745,7 +766,7 @@ Passcode: 240892"></textarea>
                     </tr>
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 12px 0; vertical-align: middle;">
-                            <img src="${EMAIL_ICONS.key}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 12px; position: relative; top: -1px;">
+                            <img src="${EMAIL_ICONS.key}" style="width: 14px; height: 14px; vertical-align: text-bottom; margin-right: 18px; position: relative; top: -1px;">
                             <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">PASSCODE</span>
                         </td>
                         <td style="padding: 12px 0;">
@@ -766,7 +787,7 @@ Passcode: 240892"></textarea>
         <!-- Footer -->
         <div style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
             <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${company.name}</div>
-            <div style="font-size: 12px; color: #64748b;">Building Tomorrow, Today</div>
+            <div style="font-size: 12px; color: #64748b;">© 2026 ${company.name}. All Rights Reserved.</div>
         </div>
     </div>`;
         }

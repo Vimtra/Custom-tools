@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Zone Planner | Vimtra Group</title>
+    <title>Meeting Planner | Vimtra Group</title>
     <link rel="stylesheet" href="../css/styles.css">
     <!-- Luxon for Time Zones -->
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
@@ -12,19 +12,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --slot-width: 40px;
-            --slot-height: 50px;
-            --business-start: 9;
-            --business-end: 18;
+            --slot-width: 60px;
+            /* Wider for better readability */
+            --slot-height: 70px;
         }
 
+        /* Glassmorphism Containers */
         .planner-workspace {
-            background: white;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             padding: 20px;
             margin-top: 20px;
             overflow-x: auto;
+            position: relative;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Custom Scrollbar for Workspace */
+        .planner-workspace::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .planner-workspace::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .planner-workspace::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 8px;
+        }
+
+        .planner-workspace::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
         }
 
         .controls-bar {
@@ -33,157 +55,233 @@
             margin-bottom: 20px;
             align-items: center;
             flex-wrap: wrap;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
         }
 
         .zone-grid {
             display: grid;
             grid-template-columns: 200px 1fr;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .zone-header {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             font-weight: 600;
-            border-bottom: 1px solid #eee;
-            border-right: 1px solid #eee;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            z-index: 10;
         }
 
         .timeline-header {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .time-label {
             width: var(--slot-width);
             text-align: center;
             font-size: 0.75rem;
-            color: #666;
+            color: var(--text-secondary);
             padding: 10px 0;
-            border-right: 1px solid #f0f0f0;
+            border-right: 1px solid var(--border-color);
             flex-shrink: 0;
-        }
-
-        .zone-row {
-            display: contents;
         }
 
         .location-info {
             padding: 15px;
-            border-bottom: 1px solid #eee;
-            border-right: 1px solid #eee;
-            background: white;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-card);
+            /* Keep transparent/dark */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .location-name {
             font-weight: 600;
             display: block;
-            color: var(--secondary);
+            color: var(--text-primary);
+            font-size: 0.9em;
         }
 
         .location-time {
-            font-size: 0.85em;
-            color: #666;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
         .location-remove {
             color: #ef4444;
             cursor: pointer;
-            font-size: 0.8em;
+            font-size: 0.75em;
             margin-top: 5px;
             text-decoration: underline;
         }
 
         .timeline-track {
             display: flex;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
             position: relative;
-            background: white;
+            background: rgba(0, 0, 0, 0.1);
+            height: var(--slot-height);
         }
 
         .time-slot {
             width: var(--slot-width);
-            height: var(--slot-height);
-            border-right: 1px solid #f0f0f0;
+            height: 100%;
+            border-right: 1px solid var(--border-color);
             flex-shrink: 0;
-            transition: background 0.2s;
-            cursor: pointer;
-            font-size: 0.7em;
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
-            color: #888;
+            padding-bottom: 5px;
+            font-size: 0.6em;
+            color: var(--text-muted);
         }
 
         .time-slot.business-hours {
-            background-color: #ecfdf5;
-            /* Light Green */
+            background-color: rgba(34, 197, 94, 0.05);
+            /* Very subtle green tint */
         }
 
         .time-slot.night-hours {
-            background-color: #f8fafc;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Darker for night */
         }
 
-        .time-slot.selected {
-            background-color: rgba(6, 182, 212, 0.2);
-            /* Cyan tint */
-            border-top: 2px solid var(--primary);
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .time-slot.overlap-warning {
-            background-color: #fef2f2;
-            /* Light Red */
-        }
-
-        .time-slot.good-overlap {
-            background-color: #d1fae5;
-            /* Stronger Green */
-            border: 1px solid #34d399;
-        }
-
-        /* Meeting Overlay */
-        .meeting-overlay {
+        /* Visual Blocks */
+        .meeting-block {
             position: absolute;
-            top: 0;
-            bottom: 0;
-            background: rgba(13, 148, 136, 0.2);
-            border: 2px solid var(--primary);
-            border-radius: 4px;
-            pointer-events: none;
-            display: none;
+            top: 8px;
+            bottom: 8px;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.75em;
+            padding: 5px 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+            cursor: pointer;
+            opacity: 0.9;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .meeting-details-panel {
-            background: #f8f9fa;
-            border: 1px solid #eee;
+        .meeting-block:hover {
+            transform: scale(1.02);
+            z-index: 10;
+            opacity: 1;
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.4);
+        }
+
+        /* Add Meeting Panel */
+        .add-meeting-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             padding: 20px;
-            margin-top: 20px;
             border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-card);
             display: none;
+            backdrop-filter: blur(10px);
         }
 
-        .selected-time-display {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
+        /* Meeting List (Below Grid) */
+        .meeting-list {
+            margin-top: 30px;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
-        @media (max-width: 800px) {
-            .zone-grid {
-                grid-template-columns: 120px 1fr;
-            }
+        .meeting-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-primary);
+        }
 
-            :root {
-                --slot-width: 30px;
-            }
+        .meeting-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-btn {
+            color: #ef4444;
+            cursor: pointer;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        /* Overrides for Inputs within this tool */
+        .form-input,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-primary) !important;
+            appearance: auto;
+            /* Ensure system default arrow for dropdowns */
+            -webkit-appearance: auto;
+            -moz-appearance: auto;
+            cursor: pointer;
+        }
+
+        .form-input[type="date"] {
+            color-scheme: dark;
+            /* Ensures calendar popup is dark in supported browsers */
+        }
+
+        option {
+            background: #1a1a1a;
+            /* Fix dropdown background on dark theme */
+            color: white;
+        }
+
+        /* Back Button Style requested by user */
+        .btn-back-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            /* Glassy dark */
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-right: 15px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-back-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -195,10 +293,14 @@
         <div class="container">
             <div class="header-content">
                 <a href="../index.html" class="logo-container" style="text-decoration: none;">
-                    <img src="../logos/Vimtra Ventures.png" alt="Vimtra Ventures" class="logo-img">
+                    <img id="headerLogo" src="../logos/Vimtra Ventures.png" alt="Vimtra Ventures" class="logo-img">
                     <span class="app-title">Custom Tools</span>
                 </a>
-                <a href="../index.html" class="btn btn-secondary" style="margin-left: auto;">Back to Tools</a>
+                <div style="margin-left: auto; display: flex; gap: 15px; align-items: center;">
+                    <select id="companySelect" class="form-select" style="min-width: 150px; padding: 5px 10px;">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -207,68 +309,116 @@
         <section class="tools-section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">Time Zone Planner</h1>
-                    <p class="section-subtitle">Find the perfect meeting time across global teams.</p>
+                    <!-- Added Back Button Here -->
+                    <div style="display:flex; align-items:center;">
+                        <a href="../index.html" class="btn-back-header" title="Back to Tools">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="section-title" style="margin-bottom:0;">Meeting Scheduler</h1>
+                            <p class="section-subtitle" style="margin-top:5px;">Plan multiple meetings across global
+                                time zones.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Controls -->
                 <div class="controls-bar">
                     <div class="form-group" style="margin-bottom: 0;">
-                        <input type="date" id="meetingDate" class="form-input">
+                        <label style="font-size:0.8em; display:block; color:#666;">Date</label>
+                        <input type="date" id="meetingDate" class="form-input" style="padding: 5px;">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <select id="addZoneSelect" class="form-select" style="min-width: 200px;">
+
+                    <div class="form-group" style="margin-bottom: 0; margin-left:15px;">
+                        <label style="font-size:0.8em; display:block; color:#666;">Time Zone</label>
+                        <select id="addZoneSelect" class="form-select" style="min-width: 200px; padding: 5px;">
                             <option value="">+ Add Location...</option>
                             <!-- Populated by JS -->
                         </select>
                     </div>
-                    <button class="btn btn-secondary" onclick="resetPlanner()">Reset</button>
-                    <button class="btn btn-primary" style="margin-left: auto;" onclick="exportPDF()">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"
-                            style="margin-right:8px; vertical-align:text-bottom;">
-                            <path
-                                d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm12 6V9c0-.55-.45-1-1-1h-2v5h2c.55 0 1-.45 1-1zm-2-3h1v3h-1V9zm-4 5h1v-1h1v1h1v-2h-1v-1h1V9H9v5z" />
-                        </svg>
-                        Export PDF
-                    </button>
+
+                    <button class="btn btn-secondary" onclick="resetPlanner()" style="margin-left: 15px;">Reset</button>
+
+                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                        <button class="btn btn-secondary"
+                            style="background:#eef2ff; color:var(--primary); border-color:var(--primary);"
+                            onclick="toggleAddMeeting()">
+                            + New Meeting
+                        </button>
+                        <button class="btn btn-primary" onclick="exportPDF()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"
+                                style="margin-right:6px; vertical-align:text-bottom;">
+                                <path
+                                    d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm12 6V9c0-.55-.45-1-1-1h-2v5h2c.55 0 1-.45 1-1zm-2-3h1v3h-1V9zm-4 5h1v-1h1v1h1v-2h-1v-1h1V9H9v5z" />
+                            </svg>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Meeting Form -->
+                <div class="add-meeting-panel" id="addMeetingPanel">
+                    <h3 style="margin-top:0;">Add New Meeting</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Title</label>
+                            <input type="text" id="newTitle" class="form-input" placeholder="e.g. Sync">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Start Time (Local)</label>
+                            <div style="display:flex; gap:5px;">
+                                <select id="startHour" class="form-select"></select>
+                                <select id="startMin" class="form-select">
+                                    <option value="0">00</option>
+                                    <option value="15">15</option>
+                                    <option value="30">30</option>
+                                    <option value="45">45</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Duration</label>
+                            <select id="duration" class="form-select">
+                                <option value="15">15 min</option>
+                                <option value="30">30 min</option>
+                                <option value="45">45 min</option>
+                                <option value="60" selected>1 Hour</option>
+                                <option value="90">1.5 Hours</option>
+                                <option value="120">2 Hours</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label">Link</label>
+                            <input type="text" id="newLink" class="form-input" placeholder="URL">
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; text-align: right;">
+                        <button class="btn btn-secondary" onclick="toggleAddMeeting()">Cancel</button>
+                        <button class="btn btn-primary" onclick="addMeeting()">Add to Schedule</button>
+                    </div>
                 </div>
 
                 <!-- Planner Grid -->
                 <div id="plannerContainer">
                     <div class="planner-workspace" id="scheduleTable">
                         <div class="zone-grid" id="zoneGrid">
-                            <!-- Headers -->
-                            <div class="zone-header">Location</div>
-                            <div class="timeline-header" id="timelineHeader">
-                                <!-- 00-23 hours populated by JS -->
-                            </div>
-
-                            <!-- Rows populated by JS -->
+                            <!-- JS Generated -->
                         </div>
                     </div>
-                </div>
 
-                <!-- Meeting Details -->
-                <div class="meeting-details-panel" id="meetingPanel">
-                    <div class="selected-time-display" id="selectedTimeText">No time selected</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div class="form-group">
-                            <label class="form-label">Meeting Title</label>
-                            <input type="text" id="meetingTitle" class="form-input" placeholder="e.g. Weekly Sync">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Meeting Link</label>
-                            <input type="text" id="meetingLink" class="form-input" placeholder="Zoom/Teams URL">
+                    <!-- Meeting List for PDF/View -->
+                    <div class="meeting-list" id="meetingList">
+                        <h3 style="margin-top:0; border-bottom:1px solid #ddd; padding-bottom:10px;">Scheduled Meetings
+                        </h3>
+                        <div id="meetingItems">
+                            <!-- JS Populated -->
+                            <p style="color:#888; font-style:italic;">No meetings added yet.</p>
                         </div>
                     </div>
-                    <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                        <span
-                            style="display:inline-block; width:12px; height:12px; background:#d1fae5; border:1px solid #34d399; margin-right:5px;"></span>
-                        Good Overlap
-                        <span
-                            style="display:inline-block; width:12px; height:12px; background:#fef2f2; border:1px solid #ef4444; margin-right:5px; margin-left:15px;"></span>
-                        Outside Hours
-                    </p>
                 </div>
 
             </div>
@@ -276,60 +426,120 @@
     </main>
 
     <script src="../js/app.js"></script>
+    <script src="../js/company-data.js"></script>
     <script>
-        const DateTime = luxon.DateTime;
-
-        // Configuration
-        const commonZones = [
-            { name: "India (IST)", zone: "Asia/Kolkata" },
-            { name: "New York (EST)", zone: "America/New_York" },
-            { name: "London (GMT)", zone: "Europe/London" },
-            { name: "California (PST)", zone: "America/Los_Angeles" },
-            { name: "Dubai (GST)", zone: "Asia/Dubai" },
-            { name: "Singapore (SGT)", zone: "Asia/Singapore" },
-            { name: "Sydney (AEST)", zone: "Australia/Sydney" },
-            { name: "Tokyo (JST)", zone: "Asia/Tokyo" }
+        // --- Data ---
+        const zones = [
+            { group: "US", name: "US - Eastern (EST/EDT)", zone: "America/New_York" },
+            { group: "US", name: "US - Central (CST/CDT)", zone: "America/Chicago" },
+            { group: "US", name: "US - Mountain (MST/MDT)", zone: "America/Denver" },
+            { group: "US", name: "US - Pacific (PST/PDT)", zone: "America/Los_Angeles" },
+            { group: "Europe", name: "London (GMT/BST)", zone: "Europe/London" },
+            { group: "Europe", name: "Paris/Berlin (CET)", zone: "Europe/Paris" },
+            { group: "Europe", name: "Eastern Europe (EET)", zone: "Europe/Bucharest" },
+            { group: "Asia", name: "India (IST)", zone: "Asia/Kolkata" },
+            { group: "Asia", name: "Dubai (GST)", zone: "Asia/Dubai" },
+            { group: "Asia", name: "Singapore (SGT)", zone: "Asia/Singapore" },
+            { group: "Asia", name: "Tokyo (JST)", zone: "Asia/Tokyo" },
+            { group: "Australia", name: "Sydney (AEST)", zone: "Australia/Sydney" }
         ];
 
         let activeZones = [];
-        let selectedHour = null; // 0-23 based on first zone
+        let meetings = [];
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Set Date to Today
-            document.getElementById('meetingDate').value = DateTime.now().toISODate();
+            console.log("Initializing Meeting Planner...");
 
-            // Populate Dropdown
-            const select = document.getElementById('addZoneSelect');
-            commonZones.forEach(z => {
-                const opt = document.createElement('option');
-                opt.value = z.zone;
-                opt.textContent = z.name;
-                select.appendChild(opt);
-            });
+            // 1. Populate Dropdowns FIRST (Critical UI)
+            try {
+                // Zone Select
+                const zoneSelect = document.getElementById('addZoneSelect');
+                zoneSelect.innerHTML = '<option value="">+ Add Location...</option>';
+                zones.forEach(z => {
+                    const opt = document.createElement('option');
+                    opt.value = z.zone;
+                    opt.textContent = z.name;
+                    zoneSelect.appendChild(opt);
+                });
+                zoneSelect.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        addZone(e.target.value);
+                        e.target.value = "";
+                    }
+                });
 
-            select.addEventListener('change', (e) => {
-                if (e.target.value) {
-                    addZone(e.target.value);
-                    e.target.value = "";
+                // Start Hour
+                const hSelect = document.getElementById('startHour');
+                hSelect.innerHTML = '';
+                for (let i = 0; i < 24; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = String(i).padStart(2, '0') + ":00";
+                    hSelect.appendChild(opt);
                 }
-            });
+                hSelect.value = 9;
 
-            // Date Change
-            document.getElementById('meetingDate').addEventListener('change', renderGrid);
+                // Populating Company Select (if available)
+                const companySelect = document.getElementById('companySelect');
+                if (window.VimtraTools && window.VimtraTools.COMPANIES) {
+                    Object.keys(VimtraTools.COMPANIES).forEach(key => {
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = VimtraTools.COMPANIES[key].name;
+                        companySelect.appendChild(opt);
+                    });
+                    companySelect.addEventListener('change', (e) => {
+                        const theme = COMPANY_THEMES[e.target.value];
+                        VimtraTools.applyTheme(theme);
+                        document.getElementById('headerLogo').src = `../${VimtraTools.COMPANIES[e.target.value].logoPath}`;
+                    });
+                    // Defaults
+                    companySelect.value = 'vimtra';
+                    if (typeof COMPANY_THEMES !== 'undefined') {
+                        VimtraTools.applyTheme(COMPANY_THEMES['vimtra']);
+                    }
+                }
 
-            // Default Zones
-            addZone(DateTime.now().zoneName); // Local
-            addZone("America/New_York");
-            addZone("Europe/London");
+                // Date Init
+                const dateInput = document.getElementById('meetingDate');
+                if (window.luxon) {
+                    dateInput.value = luxon.DateTime.now().toISODate();
+                } else {
+                    // Fallback
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                    showError("Warning: Time Zone Library could not be loaded. Please check internet connection.");
+                }
+                dateInput.addEventListener('change', renderGrid);
+
+                // Initial Zones
+                if (window.luxon) {
+                    try {
+                        addZone(luxon.DateTime.now().zoneName);
+                    } catch (e) { console.warn("Could not detect local zone"); }
+                }
+                addZone("America/Chicago");
+                addZone("Europe/London");
+                addZone("Asia/Kolkata"); // IST
+
+            } catch (err) {
+                console.error("Critical Initialization Error:", err);
+                showError("Critical UI Error: " + err.message);
+            }
         });
 
-        function addZone(zoneName) {
-            // Find pretty name or use raw
-            let name = commonZones.find(z => z.zone === zoneName)?.name || zoneName.split('/')[1].replace('_', ' ');
-            if (activeZones.find(z => z.zone === zoneName)) return; // Prevent duplicates
+        // --- Logic ---
+        function showError(msg) {
+            const alert = document.createElement('div');
+            alert.style.cssText = "position:fixed; bottom:20px; right:20px; background:#ef4444; color:white; padding:15px; border-radius:8px; z-index:9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-family:sans-serif;";
+            alert.textContent = msg;
+            document.body.appendChild(alert);
+            setTimeout(() => alert.remove(), 8000);
+        }
 
-            activeZones.push({ name, zone: zoneName });
+        function addZone(zoneName) {
+            if (!zoneName || activeZones.find(z => z.zone === zoneName)) return;
+            const zData = zones.find(z => z.zone === zoneName) || { name: zoneName, zone: zoneName };
+            activeZones.push(zData);
             renderGrid();
         }
 
@@ -340,35 +550,93 @@
 
         function resetPlanner() {
             activeZones = [];
-            addZone(DateTime.now().zoneName);
+            meetings = [];
+            if (window.luxon) {
+                addZone(luxon.DateTime.now().zoneName);
+            } else {
+                addZone("Asia/Kolkata");
+            }
             renderGrid();
-            document.getElementById('meetingPanel').style.display = 'none';
-            selectedHour = null;
+            renderMeetingList();
+        }
+
+        function toggleAddMeeting() {
+            const panel = document.getElementById('addMeetingPanel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function addMeeting() {
+            const title = document.getElementById('newTitle').value || 'Meeting';
+            let h = parseInt(document.getElementById('startHour').value);
+            let m = parseInt(document.getElementById('startMin').value);
+            const dur = parseInt(document.getElementById('duration').value);
+            const link = document.getElementById('newLink').value;
+
+            if (isNaN(h)) h = 9;
+            if (isNaN(m)) m = 0;
+
+            const id = Date.now();
+            meetings.push({ id, title, startHour: h, startMin: m, duration: dur, link });
+
+            renderGrid();
+            renderMeetingList();
+            toggleAddMeeting();
+
+            document.getElementById('newTitle').value = "";
+            document.getElementById('newLink').value = "";
+        }
+
+        function deleteMeeting(id) {
+            meetings = meetings.filter(m => m.id !== id);
+            renderGrid();
+            renderMeetingList();
         }
 
         function renderGrid() {
             const grid = document.getElementById('zoneGrid');
-            const dateStr = document.getElementById('meetingDate').value;
-            const baseDate = DateTime.fromISO(dateStr);
+            grid.innerHTML = '';
 
-            // Clear existing rows (keep header)
-            while (grid.children.length > 2) {
-                grid.removeChild(grid.lastChild);
+            if (activeZones.length === 0) return;
+
+            const dateStr = document.getElementById('meetingDate').value; // YYYY-MM-DD
+
+            // If Luxon is missing, we can't do complex math. Abort with msg.
+            if (!window.luxon) {
+                grid.innerHTML = '<div style="padding:20px; color:#ef4444; background:rgba(255,0,0,0.1);">Time Zone Library disconnected. Cannot calculate offsets. Refresh page.</div>';
+                return;
             }
 
-            // Render Header Hours (0-23)
-            const timeHeader = document.getElementById('timelineHeader');
-            timeHeader.innerHTML = '';
+            const DateTime = luxon.DateTime;
+            let baseDate = DateTime.fromISO(dateStr);
+            if (!baseDate.isValid) baseDate = DateTime.now();
+
+            // 1. Headers
+            const headerRow = document.createElement('div');
+            headerRow.className = 'zone-main-header';
+            headerRow.style.display = 'contents';
+
+            const labelCell = document.createElement('div');
+            labelCell.className = 'zone-header';
+            labelCell.textContent = 'Location (Zone)';
+            headerRow.appendChild(labelCell);
+
+            const timelineHeader = document.createElement('div');
+            timelineHeader.className = 'timeline-header';
             for (let i = 0; i < 24; i++) {
                 const div = document.createElement('div');
                 div.className = 'time-label';
-                div.textContent = `${i}:00`;
-                timeHeader.appendChild(div);
+                div.textContent = String(i).padStart(2, '0');
+                timelineHeader.appendChild(div);
             }
+            headerRow.appendChild(timelineHeader);
+            grid.appendChild(headerRow);
 
-            // Render Rows
+            // 2. Rows
+            // Primary zone (Row 0) defines the "Base Time" for the timeline columns (0-23)
+            const primaryZone = activeZones[0].zone;
+
             activeZones.forEach((loc, idx) => {
-                // Info Cell
+                // Info Column
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'location-info';
 
@@ -382,109 +650,137 @@
                 `;
                 grid.appendChild(infoDiv);
 
-                // Timeline Track
+                // Track (Timeline)
                 const trackDiv = document.createElement('div');
                 trackDiv.className = 'timeline-track';
 
+                // We render 24 slots. 
+                // Slot i represents: "The time in THIS zone, when it is (BaseHour + i) in the PRIMARY zone".
+                // This ensures vertical alignment means "Simultaneous".
+
                 for (let h = 0; h < 24; h++) {
-                    const slotTime = baseDate.set({ hour: h }).setZone(loc.zone);
-                    const localHour = slotTime.hour;
+                    // 1. Create a moment at PrimaryZone Hour 'h'
+                    const momentPrimary = baseDate.setZone(primaryZone).set({ hour: h, minute: 0, second: 0 });
+
+                    // 2. Convert to This Zone
+                    const momentLocal = momentPrimary.setZone(loc.zone);
+                    const localH = momentLocal.hour;
 
                     const slot = document.createElement('div');
                     slot.className = 'time-slot';
-                    slot.textContent = localHour;
-                    slot.dataset.globalHour = h; // Store base hour index
 
-                    // Business Hours Logic (9am - 6pm)
-                    if (localHour >= 9 && localHour <= 17) {
+                    // Style business hours based on LOCAL time
+                    if (momentLocal.weekday <= 5 && localH >= 9 && localH <= 17) {
                         slot.classList.add('business-hours');
                     } else {
                         slot.classList.add('night-hours');
                     }
 
-                    // Selection Event
-                    slot.addEventListener('click', () => selectTime(h));
+                    // Label
+                    const label = document.createElement('span');
+                    label.style.fontSize = "0.7em";
+                    label.style.opacity = "0.7";
+                    label.textContent = localH;
 
-                    // Highlight Selected
-                    if (selectedHour === h) {
-                        slot.classList.add('selected');
-                        // Color Logic based on overlap
-                        // We check overlap dynamically in visual update, but simplistic here:
-                        // If selected and outside business hours -> Red Warning
-                        if (localHour < 8 || localHour > 19) {
-                            slot.classList.add('overlap-warning');
-                        } else {
-                            slot.classList.add('good-overlap');
-                        }
+                    // Date change indicator?
+                    if (localH === 0) {
+                        label.style.fontWeight = "bold";
+                        label.style.color = "var(--primary)";
+                        label.textContent = momentLocal.toFormat("d MMM");
+                        label.style.fontSize = "0.6em";
                     }
+
+                    slot.style.display = "flex";
+                    slot.style.alignItems = "flex-end";
+                    slot.style.justifyContent = "center";
+                    slot.appendChild(label);
 
                     trackDiv.appendChild(slot);
                 }
+
+                // Render Meetings
+                // Meetings are stored with StartHour relative to PRIMARY ZONE (implied).
+
+                meetings.forEach(mtg => {
+                    const startX = mtg.startHour + (mtg.startMin / 60);
+                    const durationH = mtg.duration / 60;
+
+                    const block = document.createElement('div');
+                    block.className = 'meeting-block';
+                    block.textContent = mtg.title;
+                    block.title = `${mtg.title} (${mtg.duration} min)`;
+
+                    // 1 slot = 60px (var(--slot-width))
+                    const SLOT_WIDTH = 60;
+
+                    block.style.left = `${startX * SLOT_WIDTH}px`;
+                    block.style.width = `${durationH * SLOT_WIDTH}px`;
+
+                    trackDiv.appendChild(block);
+                });
+
                 grid.appendChild(trackDiv);
             });
         }
 
-        function selectTime(hourIndex) {
-            selectedHour = hourIndex;
-            renderGrid(); // Re-render to show selection
-            updateMeetingDetails(hourIndex);
-        }
+        function renderMeetingList() {
+            const container = document.getElementById('meetingItems');
+            container.innerHTML = '';
 
-        function updateMeetingDetails(hourIndex) {
-            const dateStr = document.getElementById('meetingDate').value;
-            const baseDate = DateTime.fromISO(dateStr).set({ hour: hourIndex });
+            if (meetings.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-style:italic;">No meetings added yet.</p>';
+                return;
+            }
 
-            // Show times for all zones
-            let timeText = `Selected Time: ${baseDate.toFormat('ffff')}<br><br>`;
-            timeText += activeZones.map(z => {
-                const zTime = baseDate.setZone(z.zone);
-                return `<strong>${z.name}</strong>: ${zTime.toFormat('h:mm a')}`;
-            }).join(' | ');
+            // Sort by time
+            meetings.sort((a, b) => (a.startHour * 60 + a.startMin) - (b.startHour * 60 + b.startMin));
 
-            document.getElementById('selectedTimeText').innerHTML = timeText;
-            document.getElementById('meetingPanel').style.display = 'block';
+            meetings.forEach(mtg => {
+                const div = document.createElement('div');
+                div.className = 'meeting-item';
+                const start = String(mtg.startHour).padStart(2, '0') + ':' + String(mtg.startMin).padStart(2, '0');
+
+                div.innerHTML = `
+                    <div>
+                        <strong>${start}</strong> - <span style="font-weight:600; color:var(--primary);">${mtg.title}</span> 
+                        <span style="color:var(--text-secondary); font-size:0.9em;">(${mtg.duration} min)</span>
+                        ${mtg.link ? `<br><a href="${mtg.link}" target="_blank" style="font-size:0.85em;">${mtg.link}</a>` : ''}
+                    </div>
+                    <div class="delete-btn" onclick="deleteMeeting(${mtg.id})">Delete</div>
+                 `;
+                container.appendChild(div);
+            });
         }
 
         function exportPDF() {
             const element = document.getElementById('plannerContainer');
-            const title = document.getElementById('meetingTitle').value || 'Meeting Schedule';
-            const link = document.getElementById('meetingLink').value;
 
-            // Create a temporary container with title and link for the PDF
-            const pdfContent = document.createElement('div');
-            pdfContent.style.padding = "20px";
-
-            const header = document.createElement('h2');
-            header.textContent = title;
-            header.style.color = "#0d9488";
-            pdfContent.appendChild(header);
-
-            if (link) {
-                const sub = document.createElement('p');
-                sub.innerHTML = `<strong>Link:</strong> <a href="${link}">${link}</a>`;
-                pdfContent.appendChild(sub);
-            }
-
-            const details = document.createElement('div');
-            details.innerHTML = document.getElementById('selectedTimeText').innerHTML;
-            details.style.marginBottom = "20px";
-            pdfContent.appendChild(details);
-
-            // Clone grid
-            const gridClone = document.getElementById('zoneGrid').cloneNode(true);
-            pdfContent.appendChild(gridClone);
+            // Force background color for PDF to ensure visibility
+            const originalBg = element.style.backgroundColor;
+            element.style.backgroundColor = "#0a0a0f"; // Match website dark theme
+            element.style.color = "white"; // Ensure text is white
+            element.style.padding = "20px"; // Add some padding
 
             const opt = {
-                margin: 0.5,
+                margin: 0.2,
                 filename: 'meeting-schedule.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0a0f' }, // Force dark background
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
             };
 
-            html2pdf().set(opt).from(pdfContent).save();
-        }
+            document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'none');
+            document.querySelectorAll('.location-remove').forEach(b => b.style.display = 'none');
 
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore original styles
+                element.style.backgroundColor = originalBg;
+                element.style.padding = "";
+
+                document.querySelectorAll('.delete-btn').forEach(b => b.style.display = 'block');
+                document.querySelectorAll('.location-remove').forEach(b => b.style.display = 'block');
+            });
+        }
     </script>
 </body>
 

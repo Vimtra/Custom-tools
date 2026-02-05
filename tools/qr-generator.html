@@ -17,10 +17,12 @@
         }
 
         .config-panel {
-            background: white;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
         }
 
         .preview-panel {
@@ -28,29 +30,34 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: white;
+            background: var(--bg-card);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
         .qr-canvas-container {
             margin: 30px 0;
             padding: 20px;
-            background: #f8f9fa;
+            background: #ffffff;
+            /* QR Code needs white BG usually for contrast scanning */
             border-radius: 8px;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
             min-height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            /* Inset shadow to look like a cutout */
         }
 
         .config-group {
             margin-bottom: 25px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .config-group:last-child {
@@ -60,7 +67,7 @@
         .config-title {
             font-weight: 600;
             margin-bottom: 15px;
-            color: var(--secondary);
+            color: var(--primary-light);
             display: block;
             font-size: 1.1em;
         }
@@ -72,25 +79,27 @@
         }
 
         .style-btn {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
             padding: 10px;
             border-radius: 6px;
             cursor: pointer;
             text-align: center;
             font-size: 0.9em;
             transition: all 0.2s;
+            color: var(--text-primary);
         }
 
         .style-btn:hover {
             border-color: var(--primary);
-            background: #eef2ff;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .style-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.4);
         }
 
         .color-picker-row {
@@ -107,7 +116,14 @@
             display: block;
             font-size: 0.85em;
             margin-bottom: 5px;
-            color: #666;
+            color: var(--text-secondary);
+        }
+
+        /* Custom Input Styles override */
+        input[type="color"] {
+            border: none;
+            background: transparent;
+            cursor: pointer;
         }
 
         .file-upload-wrapper {
@@ -118,9 +134,9 @@
         }
 
         .file-upload-btn {
-            border: 2px dashed #ddd;
-            color: #666;
-            background-color: #fafafa;
+            border: 2px dashed var(--border-color);
+            color: var(--text-secondary);
+            background-color: rgba(255, 255, 255, 0.02);
             padding: 20px;
             border-radius: 8px;
             font-size: 14px;
@@ -134,13 +150,51 @@
         .file-upload-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            background: #eef2ff;
+            background: rgba(var(--primary-rgb), 0.1);
         }
 
         @media (max-width: 900px) {
             .qr-workspace {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Header Select Fix */
+        #companySelect,
+        #companyLogoSelect,
+        #fileFormat,
+        .form-input {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        /* Back Button Style requested by user */
+        .btn-back-header {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            /* Glassy dark */
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-right: 15px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-back-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -152,10 +206,14 @@
         <div class="container">
             <div class="header-content">
                 <a href="../index.html" class="logo-container" style="text-decoration: none;">
-                    <img src="../logos/Vimtra Ventures.png" alt="Vimtra Ventures" class="logo-img">
+                    <img id="headerLogo" src="../logos/Vimtra Ventures.png" alt="Vimtra Ventures" class="logo-img">
                     <span class="app-title">Custom Tools</span>
                 </a>
-                <a href="../index.html" class="btn btn-secondary" style="margin-left: auto;">Back to Tools</a>
+                <div style="margin-left: auto; display: flex; gap: 15px; align-items: center;">
+                    <select id="companySelect" class="form-select" style="min-width: 150px; padding: 5px 10px;">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -164,8 +222,21 @@
         <section class="tools-section">
             <div class="container">
                 <div class="section-header">
-                    <h1 class="section-title">QR Code Generator</h1>
-                    <p class="section-subtitle">Create custom, branded QR codes for links, text, and more.</p>
+                    <!-- Added Back Button Here -->
+                    <div style="display:flex; align-items:center;">
+                        <a href="../index.html" class="btn-back-header" title="Back to Tools">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="section-title" style="margin-bottom:0;">QR Code Generator</h1>
+                            <p class="section-subtitle" style="margin-top:5px;">Create custom, branded QR codes for
+                                links, text, and more.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="qr-workspace">
@@ -224,11 +295,19 @@
 
                         <!-- Logo -->
                         <div class="config-group">
-                            <span class="config-title">5. Logo (Optional)</span>
+                            <span class="config-title">5. Logo</span>
+                            <div class="form-group">
+                                <label class="form-label">Select Company Logo</label>
+                                <select id="companyLogoSelect" class="form-select">
+                                    <option value="">None</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div style="text-align: center; margin: 10px 0; font-size: 0.9em; color: #888;">- OR -</div>
                             <div class="file-upload-wrapper">
                                 <input type="file" id="logoUpload" accept="image/*" style="display: none;">
                                 <button class="file-upload-btn" onclick="document.getElementById('logoUpload').click()">
-                                    Click to Upload Logo
+                                    Upload Custom Logo
                                 </button>
                                 <div id="logoName"
                                     style="margin-top: 10px; font-size: 0.9em; color: var(--primary); text-align: center; display: none;">
@@ -271,7 +350,57 @@
     </main>
 
     <script src="../js/app.js"></script>
+    <script src="../js/company-data.js"></script>
     <script>
+        // Init Company Selector
+        document.addEventListener('DOMContentLoaded', () => {
+            const companySelect = document.getElementById('companySelect');
+            const logoSelect = document.getElementById('companyLogoSelect');
+
+            // Populate Dropdowns
+            Object.keys(VimtraTools.COMPANIES).forEach(key => {
+                const company = VimtraTools.COMPANIES[key];
+
+                // Header Selector
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = company.name;
+                companySelect.appendChild(opt);
+
+                // QR Logo Selector
+                const logoOpt = document.createElement('option');
+                logoOpt.value = key; // We will look up data URI
+                logoOpt.textContent = company.name;
+                logoSelect.appendChild(logoOpt);
+            });
+
+            // Handle Header Theme Switch
+            companySelect.addEventListener('change', (e) => {
+                const theme = COMPANY_THEMES[e.target.value];
+                VimtraTools.applyTheme(theme);
+                document.getElementById('headerLogo').src = `../${VimtraTools.COMPANIES[e.target.value].logoPath}`;
+            });
+
+            // Handle QR Logo Selection
+            logoSelect.addEventListener('change', (e) => {
+                const key = e.target.value;
+                if (key && COMPANY_THEMES[key]) {
+                    uploadedLogo = COMPANY_THEMES[key].logoData; // Base64 from data file
+                    document.getElementById('logoName').textContent = "Selected: " + VimtraTools.COMPANIES[key].name;
+                    document.getElementById('logoName').style.display = 'block';
+                } else {
+                    uploadedLogo = null;
+                    document.getElementById('logoName').style.display = 'none';
+                }
+                updateQR();
+            });
+
+            // Initialize default theme
+            const defaultCompany = 'vimtra';
+            companySelect.value = defaultCompany;
+            VimtraTools.applyTheme(COMPANY_THEMES[defaultCompany]);
+        });
+
         // Check if library loaded
         if (typeof QRCodeStyling === 'undefined') {
             document.getElementById('qrCanvas').innerHTML = '<p style="color: red;">Error: QR Code Library not loaded. Please check internet connection.</p>';
