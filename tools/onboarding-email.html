@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Email Generator | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Specific Styles imported from Zoom Tool for Consistency */
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .input-section {
+            padding: 20px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: #1e1e24;
+            /* Dark card background to match Zoom tool */
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Email Preview Styles */
+        .email-preview-container {
+            position: sticky;
+            top: 20px;
+        }
+
+        /* The white card inside the preview container */
+        .email-template {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .email-template-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .email-template-header img {
+            height: auto;
+            max-height: 48px;
+            max-width: 200px;
+        }
+
+        .email-template-body {
+            padding: 40px 32px;
+            color: #333333;
+            font-family: 'Inter', Arial, sans-serif;
+            /* Professional Font */
+            line-height: 1.6;
+        }
+
+        .email-template-body p {
+            margin-bottom: 16px;
+        }
+
+        .email-template-body h3 {
+            color: #1e293b;
+            font-size: 16px;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .email-template-body ul {
+            margin-top: 0;
+            padding-left: 20px;
+            margin-bottom: 24px;
+        }
+
+        .email-template-body li {
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            /* Align with main content */
+            background: var(--background);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .back-btn:hover {
+            background: var(--surface);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        /* Attachment Box Style in Email */
+        .email-attachment-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    </style>
+</head>
+
+<body class="theme-vimtra">
+    <!-- Navbar -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="../logos/Vimtra Ventures.png" alt="Company Logo" class="logo-img" id="headerLogo">
+                    <span class="app-title">Custom Tools</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Tools">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </a>
+                <h1>Onboarding Email Generator</h1>
+            </div>
+        </div>
+    </div>
+
+    <main class="tool-container">
+        <div class="two-column">
+            <!-- Left Column: Inputs -->
+            <div class="input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Candidate Details</h3>
+                    </div>
+                    <div class="input-section">
+                        <!-- Company Selector -->
+                        <div class="form-group">
+                            <label class="form-label">Select Company</label>
+                            <select class="company-select form-select" id="companySelect">
+                                <option value="vimtra">Vimtra Ventures</option>
+                                <option value="urpan">Urpan Technologies</option>
+                                <option value="tekcog">Tekcog</option>
+                                <option value="insight">Insight Intelli</option>
+                                <option value="techmynds">Tech Mynds</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Template Style</label>
+                            <select class="form-select" id="templateSelect">
+                                <option value="classic">Classic (Standard)</option>
+                                <option value="premium">Premium (Modern/Minimalist)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Candidate Name</label>
+                            <input type="text" id="candidateName" class="form-input" value=""
+                                placeholder="Enter Candidate Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Role</label>
+                            <input type="text" id="jobRole" class="form-input" value="" placeholder="Enter Job Title">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Actions</h3>
+                    </div>
+                    <div class="input-section">
+                        <div
+                            style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #fbbf24;">
+                            <strong style="display: block; margin-bottom: 4px;">Important GitHub Workflow:</strong>
+                            1. The email will have a "Download FORM IIA" button (links to GitHub).<br>
+                            2. You <strong>MUST ALSO</strong> download the file yourself and attach it to the email
+                            manually for safety.
+                        </div>
+
+                        <a href="../assets/attachments/FORM IIA.xlsx" download class="btn btn-secondary"
+                            style="margin-bottom: 16px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"
+                                style="margin-right: 8px;">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                            </svg>
+                            Download FORM IIA (For Attachment)
+                        </a>
+
+                        <button class="btn btn-primary" onclick="openInGmail()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                            Open Gmail (Paste Here)
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="copyEmailContent()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                            Copy Email Body
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Email Preview -->
+            <div class="email-preview-container">
+                <div class="card email-template" style="background: #fff;">
+                    <!-- Email Header -->
+                    <div class="email-template-header" id="emailHeaderBg">
+                        <img src="../logos/Vimtra Ventures.png" alt="Company Logo" id="emailLogo">
+                    </div>
+
+                    <!-- Email Body -->
+                    <div class="email-template-body" id="emailBody">
+                        <!-- Content Generated by JS -->
+                    </div>
+
+                    <!-- Email Footer -->
+                    <div
+                        style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+                        <div class="footer-company" id="footerCompany"
+                            style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Vimtra
+                            Ventures</div>
+                        <div class="footer-tagline" style="font-size: 12px; color: #64748b;">
+                            &copy; <span id="copyrightYear">2026</span> <span id="footerCopyrightCompany">Vimtra
+                                Ventures</span>. All Rights Reserved.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/company-data.js?v=2"></script>
+    <script src="../js/app.js?v=2"></script>
+    <script>
+        // GITHUB PAGES URL BASE - CHANGE THIS TO REPO URL
+        const GITHUB_BASE_URL = "https://vimtra.github.io/Custom-tools";
+
+        function getFirstName(fullName) {
+            if (!fullName) return '';
+            const parts = fullName.trim().split(' ');
+            let first = parts[0];
+            if (first === first.toUpperCase()) {
+                first = first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+            }
+            return first;
+        }
+
+
+        function generateClassicTemplate() {
+            const companyKey = document.getElementById('companySelect').value;
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+            const candidateName = document.getElementById('candidateName').value || '[Candidate Name]';
+            const role = document.getElementById('jobRole').value || '[Job Role]';
+            const firstName = getFirstName(candidateName) || '[First Name]';
+
+            // Link to the hosted file on GitHub pages
+            const attachmentUrl = `${GITHUB_BASE_URL}/assets/attachments/FORM%20IIA.xlsx`;
+
+            return `
+            <div style="font-family: 'Inter', Arial, sans-serif; font-size: 14px; color: #333; line-height: 1.6;">
+                <p>Dear ${firstName},</p>
+                
+                <p>Greetings from ${company.name}!!</p>
+                
+                <p>We cordially congratulate you on your success. We are pleased to inform you that you have been selected for <strong>${role}</strong> in ${company.name}.</p>
+                
+                <p>We want to start the onboarding process to confirm your employment with us. Please provide the mandatory documents (scanned PDF) as mentioned below.</p>
+                
+                <h3 style="color: #1e293b; font-size: 16px; margin: 24px 0 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Identity Documents</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 6px;">1.1 Aadhar Card</li>
+                    <li style="margin-bottom: 6px;">1.2 Driver License/Passport</li>
+                    <li style="margin-bottom: 6px;">1.3 Pan Card</li>
+                </ul>
+
+                <h3 style="color: #1e293b; font-size: 16px; margin: 24px 0 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Former Employment Documents</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 6px;">2.1 Payslips of last 6 months (if applicable)</li>
+                    <li style="margin-bottom: 6px;">2.2 Offer Letter</li>
+                    <li style="margin-bottom: 6px;">2.3 Relieving Letter</li>
+                    <li style="margin-bottom: 6px;">2.4 Experience Letter</li>
+                </ul>
+
+                <h3 style="color: #1e293b; font-size: 16px; margin: 24px 0 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Bank Account Documents</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 6px;">3.1 Bank Statements of Salary Account for last 6 months</li>
+                    <li style="margin-bottom: 6px;">3.2 Bank Account Details for Salary Deposit</li>
+                </ul>
+
+                <h3 style="color: #1e293b; font-size: 16px; margin: 24px 0 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Educational Certificates</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 6px;">4.1 Tenth Grade Certificate</li>
+                    <li style="margin-bottom: 6px;">4.2 Degree Certificate</li>
+                </ul>
+
+                <h3 style="color: #1e293b; font-size: 16px; margin: 24px 0 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Miscellaneous Documents</h3>
+                <ul style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li style="margin-bottom: 6px;">5.1 <strong>FORM IIA</strong> - <a href="${attachmentUrl}" style="color: ${company.primary || '#0d9488'}; text-decoration: none; font-weight: 600;">Download FORM IIA (Excel)</a></li>
+                    <li style="margin-bottom: 6px;">5.2 Updated Resume</li>
+                </ul>
+
+                <div style="margin-top: 24px; padding: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; color: #92400e; font-size: 13px;">
+                    <strong>** It is mandatory to complete FORM II A regardless of the documents submitted.</strong>
+                </div>
+            </div>`;
+        }
+
+        function generatePremiumTemplate() {
+            const companyKey = document.getElementById('companySelect').value;
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+            const candidateName = document.getElementById('candidateName').value || '[Candidate Name]';
+            const role = document.getElementById('jobRole').value || '[Job Role]';
+            const firstName = getFirstName(candidateName) || '[First Name]';
+            const attachmentUrl = `${GITHUB_BASE_URL}/assets/attachments/FORM%20IIA.xlsx`;
+
+            // Premium/Minimalist Design - Apple/Google Style
+            // Features: Centered card, lots of whitespace, subtle shadows, system fonts
+
+            return `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1d1d1f;">
+                
+                <!-- Welcome Section -->
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h1 style="font-size: 32px; font-weight: 600; letter-spacing: -0.5px; margin: 0 0 10px 0; color: #1d1d1f;">Welcome to the team, ${firstName}.</h1>
+                    <p style="font-size: 19px; line-height: 1.4; color: #86868b; margin: 0;">We’re thrilled to have you join as our new <strong style="color: #1d1d1f;">${role}</strong>.</p>
+                </div>
+
+                <!-- Main Content Card -->
+                <div style="background: #ffffff; padding: 0 10px; margin-bottom: 40px;">
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+                        To get you settled in quickly and confirm your employment, we need to collect a few documents from you. Please scan and send the following as PDF files.
+                    </p>
+
+                    <!-- Document Checklist -->
+                    <div style="background: #fbfbfd; border-radius: 18px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.04);">
+                        
+                        <div style="margin-bottom: 24px;">
+                            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #86868b; margin: 0 0 12px 0;">01. Identity & Employment</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; font-size: 15px;">
+                                <li style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> Aadhar Card & Pan Card
+                                </li>
+                                <li style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> Driver License or Passport
+                                </li>
+                                <li style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> Offer, Relieving & Experience Letters
+                                </li>
+                                <li style="padding: 8px 0; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> Last 6 Months Payslips (if applicable)
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #86868b; margin: 0 0 12px 0;">02. Education & Bank</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; font-size: 15px;">
+                                <li style="padding: 8px 0; border-bottom: 1px solid #e5e5e5; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> 10th Grade & Degree Certificates
+                                </li>
+                                <li style="padding: 8px 0; display: flex; align-items: start;">
+                                    <span style="color: ${company.primary || '#0066CC'}; margin-right: 12px;">•</span> Salary Account Bank Statements (6 Months)
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #86868b; margin: 0 0 12px 0;">03. Required Action</h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                                <span style="font-size: 15px; font-weight: 500;">Fill out FORM IIA</span>
+                                <a href="${attachmentUrl}" style="background: ${company.primary || '#000'}; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; transition: opacity 0.2s;">Download Excel ↓</a>
+                            </div>
+                            <p style="font-size: 13px; color: #86868b; margin: 10px 0 0 0;">Updated Resume is also required.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mandatory Notice -->
+                    <p style="font-size: 14px; color: #86868b; text-align: center; margin-top: 30px;">
+                        Note: Completion of FORM IIA is mandatory for all new hires.
+                    </p>
+                </div>
+            </div>`;
+        }
+
+        function updatePreview() {
+            const companyKey = document.getElementById('companySelect').value;
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+
+            // 1. Update Layout Colors
+            if (theme) {
+                document.getElementById('emailHeaderBg').style.background = theme.light;
+            }
+            if (document.getElementById('headerLogo')) {
+                // Header logo logic
+            }
+
+            // 2. Update Email Logo
+            const emailLogo = document.getElementById('emailLogo');
+            if (emailLogo && theme.logoData) {
+                emailLogo.src = theme.logoData;
+                emailLogo.alt = companyData.name;
+            }
+
+            // 3. Update Footer Text
+            document.getElementById('footerCompany').textContent = companyData.name;
+            document.getElementById('footerCopyrightCompany').textContent = companyData.name;
+
+            // 4. Update Body HTML
+            const templateStyle = document.getElementById('templateSelect').value;
+            let emailContent = '';
+
+            if (templateStyle === 'premium') {
+                emailContent = generatePremiumTemplate();
+                // Update header background for premium look if needed, or keep standard
+                // Premium template might not need the top banner if it has its own header structure
+                // But for consistency we might keep the logo header.
+                // Let's hide the standard header for premium as it has its own centered title style?
+                // Actually, let's keep it consistent context but maybe cleaner. 
+                // For now, we inject the content.
+            } else {
+                emailContent = generateClassicTemplate();
+            }
+
+            document.getElementById('emailBody').innerHTML = emailContent;
+        }
+
+        function openInGmail() {
+            const candidateName = document.getElementById('candidateName').value;
+            const subject = `Congratulations!!! - Onboarding Documents - ${candidateName}`;
+
+            // Gmail compose URL with Subject only
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}`;
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Gmail opened! Paste content (Ctrl+V). Form IIA Download link is inside.', 'success');
+        }
+
+        async function copyEmailContent() {
+            try {
+                // Return full HTML string (DIV ONLY, NO HTML/BODY TAGS) - Wrapped for clipboard
+                // We need to construct the full table wrapper similar to zoom tool for consistency if wanted, 
+                // but simpler DIV wrapper is fine for this text email.
+                const templateStyle = document.getElementById('templateSelect').value;
+                let bodyContent = '';
+                if (templateStyle === 'premium') {
+                    bodyContent = generatePremiumTemplate();
+                } else {
+                    bodyContent = generateClassicTemplate();
+                }
+
+                const htmlContent = `
+                    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Inter', Arial, sans-serif;">
+                        ${document.getElementById('emailHeaderBg').outerHTML}
+                        ${bodyContent}
+                        <div style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${document.getElementById('footerCompany').textContent}</div>
+                            <div style="font-size: 12px; color: #64748b;">© 2026 ${document.getElementById('footerCompany').textContent}. All Rights Reserved.</div>
+                        </div>
+                    </div>`;
+
+                const textContent = "Please enable HTML email to view this content.";
+
+                const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                const blobText = new Blob([textContent], { type: 'text/plain' });
+                const data = [new ClipboardItem({
+                    'text/html': blobHtml,
+                    'text/plain': blobText
+                })];
+
+                await navigator.clipboard.write(data);
+                VimtraTools.showToast('Copied! Paste in Gmail.', 'success');
+            } catch (err) {
+                console.error('Clipboard error:', err);
+                VimtraTools.showToast('Clipboard error. Check console.', 'error');
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Bind listeners first
+            const companySelect = document.getElementById('companySelect');
+            const templateSelect = document.getElementById('templateSelect');
+
+            if (companySelect) {
+                companySelect.addEventListener('change', updatePreview);
+            }
+            if (templateSelect) {
+                templateSelect.addEventListener('change', updatePreview);
+            }
+
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+
+            // Initial render
+            try {
+                updatePreview();
+            } catch (e) {
+                console.error("Error updating preview:", e);
+            }
+        });
+    </script>
+</body>
+
+</html>

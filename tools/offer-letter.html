@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Letter Generator | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .input-section {
+            padding: 20px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1e1e24;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .email-preview-container {
+            position: sticky;
+            top: 20px;
+        }
+
+        .email-template {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .email-template-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .email-template-header img {
+            height: auto;
+            max-height: 48px;
+            max-width: 200px;
+        }
+
+        .email-template-body {
+            padding: 40px 32px;
+            color: #333333;
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* Handshake Background */
+        .email-template-body::before {
+            content: '';
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 200px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23e5e7eb" opacity="0.3"><path d="M85 45c-3-2-7-2-10 0l-8 6c-1-3-4-5-7-5h-5l-8-8c-3-3-8-3-11 0l-3 3-8-8c-4-4-10-4-14 0l-5 5c-2 2-2 5 0 7l25 25c3 3 8 3 11 0l3-3 8 8c3 3 8 3 11 0l21-21c3-3 3-7 0-9zM35 62L15 42l5-5c2-2 4-2 6 0l12 12-3 3c-2 2-2 5 0 7l3 3h-3zm40-2L60 75c-1 1-3 1-4 0l-8-8 3-3c2-2 2-5 0-7l-3-3h5c1 0 2 1 2 2l2 5 10-8c1-1 3-1 4 0l6 5-2 2z"/></svg>');
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            background: var(--background);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .back-btn:hover {
+            background: var(--surface);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        /* Offer Letter Specific Styles */
+        .offer-highlight {
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 24px 0;
+        }
+
+        .congrats-banner {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .congrats-banner h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #92400e;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .congrats-banner p {
+            font-size: 16px;
+            color: #a16207;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body class="theme-vimtra">
+    <!-- Navbar -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="../logos/Vimtra Ventures.png" alt="Company Logo" class="logo-img" id="headerLogo">
+                    <span class="app-title">Custom Tools</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Tools">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </a>
+                <h1>Offer Letter Generator</h1>
+            </div>
+        </div>
+    </div>
+
+    <main class="tool-container">
+        <div class="two-column">
+            <!-- Left Column: Inputs -->
+            <div class="input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Offer Details</h3>
+                    </div>
+                    <div class="input-section">
+                        <!-- Company Selector -->
+                        <div class="form-group">
+                            <label class="form-label">Select Company</label>
+                            <select class="company-select form-select" id="companySelect">
+                                <option value="vimtra">Vimtra Ventures</option>
+                                <option value="urpan">Urpan Technologies</option>
+                                <option value="tekcog">Tekcog</option>
+                                <option value="insight">Insight Intelli</option>
+                                <option value="techmynds">Tech Mynds</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Candidate Full Name</label>
+                            <input type="text" id="candidateName" class="form-input" value=""
+                                placeholder="e.g., Pawan Allan">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Designation / Role</label>
+                            <input type="text" id="jobRole" class="form-input" value=""
+                                placeholder="e.g., Web Developer">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Honorific (Optional)</label>
+                            <select class="form-select" id="honorific">
+                                <option value="">None</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Dr.">Dr.</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Actions</h3>
+                    </div>
+                    <div class="input-section">
+                        <button class="btn btn-primary" onclick="openInGmail()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                            Open Gmail (Paste Here)
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="copyEmailContent()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                            Copy Email Body
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Email Preview -->
+            <div class="email-preview-container">
+                <div class="card email-template" style="background: #fff;">
+                    <!-- Email Header -->
+                    <div class="email-template-header" id="emailHeaderBg">
+                        <img src="../logos/Vimtra Ventures.png" alt="Company Logo" id="emailLogo">
+                    </div>
+
+                    <!-- Email Body -->
+                    <div class="email-template-body" id="emailBody">
+                        <!-- Content Generated by JS -->
+                    </div>
+
+                    <!-- Email Footer -->
+                    <div
+                        style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+                        <div class="footer-company" id="footerCompany"
+                            style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Vimtra
+                            Ventures</div>
+                        <div class="footer-tagline" style="font-size: 12px; color: #64748b;">
+                            &copy; <span id="copyrightYear">2026</span> <span id="footerCopyrightCompany">Vimtra
+                                Ventures</span>. All Rights Reserved.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/company-data.js?v=2"></script>
+    <script src="../js/app.js?v=2"></script>
+    <script>
+        function generateOfferLetterHtml() {
+            const companyKey = document.getElementById('companySelect').value;
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const candidateName = document.getElementById('candidateName').value || '[Candidate Name]';
+            const role = document.getElementById('jobRole').value || '[Job Role]';
+            const honorific = document.getElementById('honorific').value;
+
+            const displayName = honorific ? `${honorific} ${candidateName}` : candidateName;
+            const subjectName = honorific ? `${honorific} ${candidateName.split(' ')[0]}` : candidateName.split(' ')[0];
+
+            // Handshake SVG as inline background (subtle watermark)
+            const handshakeSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" fill="${theme.primary || '#10b981'}" opacity="0.08"><path d="M92 35c-4-3-9-3-13 0l-10 8c-1-4-5-6-9-6H53l-10-10c-4-4-10-4-14 0l-4 4-10-10c-5-5-13-5-18 0l-6 6c-2 2-2 6 0 8l32 32c4 4 10 4 14 0l4-4 10 10c4 4 10 4 14 0l27-27c4-4 4-9 0-11zM40 58L12 30l6-6c2-2 5-2 8 0l15 15-4 4c-2 2-2 6 0 8l4 4h-1zm52-3L70 77c-1 1-4 1-5 0l-10-10 4-4c2-2 2-6 0-8l-4-4h6c2 0 3 1 3 2l2 6 13-10c2-2 4-2 5 0l8 6c1 1 1 3 0 4z"/></svg>`;
+
+            return `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', Arial, sans-serif; font-size: 15px; color: #1e293b; line-height: 1.7; position: relative;">
+                
+                <!-- Congratulations Banner -->
+                <div style="text-align: center; padding: 28px 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; margin-bottom: 28px;">
+                    <h1 style="font-size: 26px; font-weight: 700; color: #92400e; margin: 0 0 6px 0; letter-spacing: -0.5px;">🎉 Congratulations!</h1>
+                    <p style="font-size: 15px; color: #a16207; margin: 0;">You've been offered a position at ${company.name}</p>
+                </div>
+
+                <!-- Greeting -->
+                <p style="margin-bottom: 20px;">Dear <strong>${displayName}</strong>,</p>
+
+                <!-- Main Message -->
+                <p style="margin-bottom: 20px;">
+                    Congratulations! You have been offered an exciting position at our organisation – <strong style="color: ${theme.primary || '#0d9488'};">${company.name}, India</strong> as a <strong>${role}</strong>.
+                </p>
+
+                <!-- Offer Details Box -->
+                <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%); border-left: 4px solid ${theme.primary || '#10b981'}; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 24px 0;">
+                    <p style="margin: 0; font-size: 14px; color: #475569;">
+                        📎 The details of your offer letter with <strong>roles & responsibilities</strong> followed by the <strong>Terms and Conditions</strong> document have been attached for reference.
+                    </p>
+                </div>
+
+                <!-- Closing -->
+                <p style="margin-bottom: 20px;">
+                    All the very best and looking forward to you joining our team!
+                </p>
+
+                <!-- Signature -->
+                <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <p style="margin: 0 0 4px 0; font-weight: 600; color: #334155;">Warm Regards,</p>
+                    <p style="margin: 0; color: #64748b; font-size: 14px;">HR Team, ${company.name}</p>
+                </div>
+
+                <!-- Handshake Watermark (Positioned) -->
+                <div style="position: absolute; bottom: 0; right: 0; width: 180px; height: 180px; opacity: 0.12; pointer-events: none;">
+                    ${handshakeSvg}
+                </div>
+            </div>`;
+        }
+
+        function updatePreview() {
+            const companyKey = document.getElementById('companySelect').value;
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+            const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+
+            // Update Layout Colors
+            if (theme) {
+                document.getElementById('emailHeaderBg').style.background = theme.light;
+            }
+
+            // Update Email Logo
+            const emailLogo = document.getElementById('emailLogo');
+            if (emailLogo && theme.logoData) {
+                emailLogo.src = theme.logoData;
+                emailLogo.alt = companyData.name;
+            }
+
+            // Update Footer Text
+            document.getElementById('footerCompany').textContent = companyData.name;
+            document.getElementById('footerCopyrightCompany').textContent = companyData.name;
+
+            // Update Body HTML
+            document.getElementById('emailBody').innerHTML = generateOfferLetterHtml();
+        }
+
+        function openInGmail() {
+            const candidateName = document.getElementById('candidateName').value || 'Candidate';
+            const role = document.getElementById('jobRole').value || 'Position';
+            const honorific = document.getElementById('honorific').value;
+            const displayName = honorific ? `${honorific} ${candidateName}` : candidateName;
+
+            const subject = `Congratulations on your Job Offer as ${role} - ${displayName}`;
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}`;
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Gmail opened! Paste content (Ctrl+V).', 'success');
+        }
+
+        async function copyEmailContent() {
+            try {
+                const htmlContent = `
+                    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Inter', Arial, sans-serif;">
+                        ${document.getElementById('emailHeaderBg').outerHTML}
+                        ${generateOfferLetterHtml()}
+                        <div style="background: #f8fafc; padding: 24px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <div style="font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">${document.getElementById('footerCompany').textContent}</div>
+                            <div style="font-size: 12px; color: #64748b;">© 2026 ${document.getElementById('footerCompany').textContent}. All Rights Reserved.</div>
+                        </div>
+                    </div>`;
+
+                const textContent = "Please enable HTML email to view this content.";
+
+                const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                const blobText = new Blob([textContent], { type: 'text/plain' });
+                const data = [new ClipboardItem({
+                    'text/html': blobHtml,
+                    'text/plain': blobText
+                })];
+
+                await navigator.clipboard.write(data);
+                VimtraTools.showToast('Copied! Paste in Gmail.', 'success');
+            } catch (err) {
+                console.error('Clipboard error:', err);
+                VimtraTools.showToast('Clipboard error. Check console.', 'error');
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const companySelect = document.getElementById('companySelect');
+            const honorificSelect = document.getElementById('honorific');
+
+            if (companySelect) {
+                companySelect.addEventListener('change', updatePreview);
+            }
+            if (honorificSelect) {
+                honorificSelect.addEventListener('change', updatePreview);
+            }
+
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+
+            // Initial render
+            try {
+                updatePreview();
+            } catch (e) {
+                console.error("Error updating preview:", e);
+            }
+        });
+    </script>
+</body>
+
+</html>

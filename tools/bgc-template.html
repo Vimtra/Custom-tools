@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGC Template Generator | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+        :root {
+            --font-family-standard: 'Inter', Arial, sans-serif;
+            --font-family-creative: 'Outfit', sans-serif;
+        }
+
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .input-section {
+            padding: 20px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1e1e24;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            /* Indicate collapsibility if implemented, but just static for now */
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .email-preview-container {
+            position: sticky;
+            top: 20px;
+        }
+
+        .email-template {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid #ddd;
+        }
+
+        .email-template-body {
+            padding: 40px 32px;
+            color: #333333;
+            font-family: var(--font-family-standard);
+            line-height: 1.6;
+            min-height: 600px;
+            background: #fff;
+        }
+
+        /* Creative Mode Override */
+        .creative-mode .email-template-body {
+            background: #f0f2f5;
+            padding: 40px;
+            font-family: var(--font-family-creative);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            background: var(--background);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .back-btn:hover {
+            background: var(--surface);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        /* Standard Table Styles */
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+    </style>
+</head>
+
+<body class="theme-vimtra">
+    <!-- Navbar -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="../logos/Vimtra Ventures.png" alt="Company Logo" class="logo-img" id="headerLogo">
+                    <span class="app-title">Custom Tools</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Tools">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                </a>
+                <h1>BGC Template Generator</h1>
+            </div>
+        </div>
+    </div>
+
+    <main class="tool-container">
+        <div class="two-column">
+            <!-- Left Column: Inputs -->
+            <div class="input-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Setup</h3>
+                    </div>
+                    <div class="input-section">
+                        <!-- Company Selector -->
+                        <div class="form-group">
+                            <label class="form-label">Select Company</label>
+                            <select class="company-select form-select" id="companySelect">
+                                <option value="vimtra">Vimtra Ventures</option>
+                                <option value="urpan">Urpan Technologies</option>
+                                <option value="tekcog">Tekcog</option>
+                                <option value="insight">Insight Intelli</option>
+                                <option value="techmynds">Tech Mynds</option>
+                            </select>
+                        </div>
+                        <!-- Style Selector -->
+                        <div class="form-group">
+                            <label class="form-label">Template Style</label>
+                            <select class="form-select" id="styleSelect">
+                                <option value="standard">Standard (Classic Table)</option>
+                                <option value="creative">Creative (Modern Card)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Details Provided by Candidate</h3>
+                    </div>
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="candidateName" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Employee ID</label>
+                            <input type="text" id="employeeID" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Designation</label>
+                            <input type="text" id="designation" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Period of Employment</label>
+                            <input type="text" id="employmentPeriod" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Remunerations</label>
+                            <input type="text" id="remuneration" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reason for Leaving</label>
+                            <input type="text" id="reasonForLeaving" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reported To (Supervisor)</label>
+                            <input type="text" id="reportedTo" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Eligible for Rehire?</label>
+                            <input type="text" id="candidateRehire" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Documents Genuine?</label>
+                            <input type="text" id="candidateDocuments" class="form-input" value="Kindly Mention">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Exit Formalities?</label>
+                            <input type="text" id="candidateExit" class="form-input" value="Kindly Mention">
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Sender Details</h3>
+                    </div>
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label class="form-label">Name of the person</label>
+                            <input type="text" id="senderName" class="form-input" value="Jothi Sai">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact number</label>
+                            <input type="text" id="senderPhone" class="form-input" value="8056128920">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3 class="card-title">Actions</h3>
+                    </div>
+                    <div class="input-section">
+                        <button class="btn btn-primary" onclick="openInGmail()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                            Open Gmail (Paste Here)
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="copyEmailBody()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                style="margin-right: 8px;">
+                                <path
+                                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                            </svg>
+                            Copy Email Body
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Email Preview -->
+            <div class="email-preview-container">
+                <div class="card email-template">
+                    <!-- Email Body -->
+                    <div class="email-template-body" id="emailBody">
+                        <!-- Content Generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/company-data.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        function generateEmailHtml() {
+            const companyKey = document.getElementById('companySelect').value;
+            const style = document.getElementById('styleSelect').value;
+            const company = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['vimtra'];
+            const theme = COMPANY_THEMES[companyKey] || COMPANY_THEMES['vimtra'];
+
+            // Candidate Details
+            const candidateName = document.getElementById('candidateName').value || '[Candidate Name]';
+            const employeeID = document.getElementById('employeeID').value || '[ID]';
+            const designation = document.getElementById('designation').value || '[Designation]';
+            const employmentPeriod = document.getElementById('employmentPeriod').value || '[Period]';
+            const remuneration = document.getElementById('remuneration').value || '[Amount]';
+            const reasonForLeaving = document.getElementById('reasonForLeaving').value || '[Reason]';
+            const reportedTo = document.getElementById('reportedTo').value || 'Kindly Mention';
+
+            const rehire = document.getElementById('candidateRehire').value || 'Kindly Mention';
+            const documents = document.getElementById('candidateDocuments').value || 'Kindly Mention';
+            const exit = document.getElementById('candidateExit').value || 'Kindly Mention';
+
+            // Company Records (Optional) - INPUTS REMOVED AS PER REQUEST
+            // We define an empty object to prevent ReferenceErrors in the template
+            const cr = {
+                name: '', id: '', designation: '', period: '',
+                remuneration: '', reportedTo: '', reason: '',
+                rehire: '', documents: '', exit: '', comments: '',
+                verifierName: '', verifierContact: ''
+            };
+
+
+            const senderName = document.getElementById('senderName').value || '[Sender Name]';
+            const senderPhone = document.getElementById('senderPhone').value || '[Sender Phone]';
+
+            const highlightColor = theme.primary || '#0d9488'; // Use company primary color
+
+            // Labels with detailed instructions (Shared across both styles)
+            const labels = {
+                designation: 'Designation<br><span style="font-size: 11px; font-weight: normal; color: #666;">(In case of a mismatch, please clarify with reason)</span>',
+                reportedTo: 'Reported to<br><span style="font-size: 11px; font-weight: normal; color: #666;">(In case of a mismatch, please confirm if the employee ever reported to the stated supervisor-directly or indirectly)</span>',
+                rehire: 'Eligible for rehire? Yes/No<br><span style="font-size: 11px; font-weight: normal; color: #666;">(If No Kindly Specify the reason)</span>',
+                documents: 'Are the Attached Documents Genuine? - Yes/No<br><span style="font-size: 11px; font-weight: normal; color: #666;">(If No, kindly Specify the reason &ndash; for e.g. is the document forged or fake or manipulated or any other reason)</span>',
+                exit: 'Are Exit formalities completed? &ndash; Yes/No<br><span style="font-size: 11px; font-weight: normal; color: #666;">(If No, please specify from whose side- candidate or company)</span>'
+            };
+
+            if (style === 'creative') {
+                // Update container class for styling overrides
+                document.querySelector('.email-template').classList.add('creative-mode');
+
+                const gradient = theme.gradient || `linear-gradient(135deg, ${highlightColor} 0%, #000 100%)`;
+
+                // Modern Creative Styles
+                const containerStyle = `background-color: #ffffff; padding: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; max-width: 800px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border: 1px solid #e0e0e0;`;
+                const headerStyle = `background: ${gradient}; color: white; padding: 30px; text-align: center;`;
+                const contentStyle = `padding: 40px;`;
+                const sectionHeaderStyle = `font-size: 18px; font-weight: 600; color: ${highlightColor}; border-bottom: 2px solid ${highlightColor}; padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;`;
+
+                // Table Styles
+                const tableStyle = `width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;`;
+                const thStyle = `background-color: ${highlightColor}; color: white; padding: 12px 15px; text-align: left; font-weight: 600; border: none;`;
+                const tdLabelStyle = `background-color: #f8f9fa; color: #444; padding: 12px 15px; border-bottom: 1px solid #eee; font-weight: 600; width: 35%;`;
+                const tdValueStyle = `padding: 12px 15px; border-bottom: 1px solid #eee; color: #333;`;
+                const tdCompanyStyle = `padding: 12px 15px; border-bottom: 1px solid #eee; background-color: #fffde7; border-left: 2px solid #fff59d; color: #333; min-width: 150px;`; // Visual difference: light yellow bg + border
+
+                // Card for Sender
+                const senderCardStyle = `background-color: #f8f9fa; border-left: 4px solid ${highlightColor}; padding: 15px; margin: 20px 0; border-radius: 0 4px 4px 0;`;
+
+                return `
+                <div style="${containerStyle}">
+                    <!-- Header -->
+                    <div style="${headerStyle}">
+                        <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">Ex-Employment Verification</h1>
+                        <p style="margin: 10px 0 0; opacity: 0.9; font-size: 16px;">${company.name}</p>
+                    </div>
+
+                    <div style="${contentStyle}">
+                        <p style="margin-top: 0;">Dear HR,</p>
+                        <p>We hope this email finds you well.</p>
+                        <p>We from <strong style="color: ${highlightColor};">${company.name}</strong> are currently seeking background verification of your ex-employee, <strong>${candidateName}</strong>.</p>
+                        <p>Following are the details provided to us, which we would request you to kindly validate against your records.</p>
+                        
+                        <!-- Sender Details Card -->
+                        <div style="${sectionHeaderStyle}">Our Contact Details</div>
+                        <div style="${senderCardStyle}">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 5px 0; font-weight: 600; color: #555; width: 150px;">Name:</td>
+                                    <td style="padding: 5px 0; color: #333;">${senderName}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px 0; font-weight: 600; color: #555;">Contact No:</td>
+                                    <td style="padding: 5px 0; color: #333;">${senderPhone}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Employment Details Table -->
+                        <div style="${sectionHeaderStyle}">Employment Verification</div>
+                        <table style="${tableStyle}">
+                            <thead>
+                                <tr>
+                                    <th style="${thStyle}; border-radius: 6px 0 0 0;">Metric</th>
+                                    <th style="${thStyle}">Candidate Provided</th>
+                                    <th style="${thStyle}; border-radius: 0 6px 0 0;">Company Records</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Name</td>
+                                    <td style="${tdValueStyle}">${candidateName}</td>
+                                    <td style="${tdCompanyStyle}">${cr.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Employee ID</td>
+                                    <td style="${tdValueStyle}">${employeeID}</td>
+                                    <td style="${tdCompanyStyle}">${cr.id}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">${labels.designation}</td>
+                                    <td style="${tdValueStyle}">${designation}</td>
+                                    <td style="${tdCompanyStyle}">${cr.designation}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Period of Employment</td>
+                                    <td style="${tdValueStyle}">${employmentPeriod}</td>
+                                    <td style="${tdCompanyStyle}">${cr.period}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Remunerations</td>
+                                    <td style="${tdValueStyle}">${remuneration}</td>
+                                    <td style="${tdCompanyStyle}">${cr.remuneration}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">${labels.reportedTo}</td>
+                                    <td style="${tdValueStyle}">${reportedTo}</td>
+                                    <td style="${tdCompanyStyle}">${cr.reportedTo}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Reason for Leaving</td>
+                                    <td style="${tdValueStyle}">${reasonForLeaving}</td>
+                                    <td style="${tdCompanyStyle}">${cr.reason}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">${labels.rehire}</td>
+                                    <td style="${tdValueStyle}"><em>${rehire}</em></td>
+                                    <td style="${tdCompanyStyle}">${cr.rehire}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">${labels.documents}</td>
+                                    <td style="${tdValueStyle}"><em>${documents}</em></td>
+                                    <td style="${tdCompanyStyle}">${cr.documents}</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">${labels.exit}</td>
+                                    <td style="${tdValueStyle}"><em>${exit}</em></td>
+                                    <td style="${tdCompanyStyle}">${cr.exit}</td>
+                                </tr>
+                                
+                                <!-- Additional Info Section -->
+                                <tr>
+                                    <td colspan="3" style="padding: 15px; background: #f0f4f8; font-weight: 600; color: ${highlightColor}; text-align: center; border-top: 2px solid white;">Verifier Details</td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Name & Job title of the Verifier</td>
+                                    <td colspan="2" style="${tdValueStyle}"><em>Kindly Mention</em></td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Contact No./ E-mail ID of the Verifier</td>
+                                    <td colspan="2" style="${tdValueStyle}"><em>Kindly Mention</em></td>
+                                </tr>
+                                <tr>
+                                    <td style="${tdLabelStyle}">Additional Comments</td>
+                                    <td colspan="2" style="${tdValueStyle}">Kindly Mention</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <p style="font-size: 13px; color: #666; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                            <em>Kindly note that your inputs will assist our client in making a prompt hiring decision. We await your response at the earliest.</em>
+                        </p>
+                        <p style="font-size: 13px; color: #666;">We look forward to your kind cooperation.</p>
+                    </div>
+                </div>
+                `;
+            } else {
+                // Standard Mode
+                document.querySelector('.email-template').classList.remove('creative-mode');
+
+                // Header Color Style
+                const headerStyle = `background-color: ${highlightColor}; color: white; padding: 10px; border: 1px solid ${highlightColor}; text-align: center; font-weight: bold;`;
+                const cellStyle = `border: 1px solid #000; padding: 8px; text-align: center; color: #000; vertical-align: middle;`;
+                const cellStyleCompany = `border: 1px solid #000; padding: 8px; text-align: center; color: #000; vertical-align: middle; background-color: #fffde7;`; // Light yellow separation
+                const labelCellStyle = `border: 1px solid #000; padding: 8px; text-align: left; font-weight: bold; vertical-align: middle; background-color: ${highlightColor}; color: white;`;
+
+                return `
+                <div style="font-family: Calibri, Arial, sans-serif; font-size: 14px; color: #000; line-height: 1.5;">
+                    <p>Dear HR,</p>
+                    <p>We hope this email finds you well.</p>
+                    <p>We from <strong style="color: ${highlightColor};">${company.name}</strong> are currently seeking background verification of your ex-employee.</p>
+                    <p>Following are the details provided to us, which we would request you to kindly validate.</p>
+                    <p>Also, please find attached documents provided by the candidate. Request you to authenticate the same.</p>
+                    
+                    <h3 style="background-color: ${highlightColor}; color: white; padding: 5px; margin-top: 20px; font-size: 15px;">Ex-Employment Verification</h3>
+                    <table class="preview-table" style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                        <tr>
+                            <td width="30%" style="${labelCellStyle}"><strong>Name of the person</strong></td>
+                            <td width="70%" style="border: 1px solid #000; padding: 8px;">${senderName}</td>
+                        </tr>
+                        <tr>
+                            <td style="${labelCellStyle}"><strong>Contact number</strong></td>
+                            <td style="border: 1px solid #000; padding: 8px;">${senderPhone}</td>
+                        </tr>
+                    </table>
+
+                    <br>
+
+                    <table class="preview-table" style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                        <thead>
+                            <tr>
+                                <th width="25%" style="${headerStyle} text-align: left;">Employment details</th>
+                                <th width="37.5%" style="${headerStyle}">Details provided by candidate</th>
+                                <th width="37.5%" style="${headerStyle}">Details as per company records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="${labelCellStyle}">Name</td>
+                                <td style="${cellStyle}">${candidateName}</td>
+                                <td style="${cellStyleCompany}">${cr.name}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Employee ID</td>
+                                <td style="${cellStyle}">${employeeID}</td>
+                                <td style="${cellStyleCompany}">${cr.id}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">${labels.designation}</td>
+                                <td style="${cellStyle}">${designation}</td>
+                                <td style="${cellStyleCompany}">${cr.designation}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Period of Employment</td>
+                                <td style="${cellStyle}">${employmentPeriod}</td>
+                                <td style="${cellStyleCompany}">${cr.period}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Remunerations</td>
+                                <td style="${cellStyle}">${remuneration}</td>
+                                <td style="${cellStyleCompany}">${cr.remuneration}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">${labels.reportedTo}</td>
+                                <td style="${cellStyle}">${reportedTo}</td>
+                                <td style="${cellStyleCompany}">${cr.reportedTo}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Reason for Leaving</td>
+                                <td style="${cellStyle}">${reasonForLeaving}</td>
+                                <td style="${cellStyleCompany}">${cr.reason}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">${labels.rehire}</td>
+                                <td style="${cellStyle}">${rehire}</td>
+                                <td style="${cellStyleCompany}">${cr.rehire}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">${labels.documents}</td>
+                                <td style="${cellStyle}">${documents}</td>
+                                <td style="${cellStyleCompany}">${cr.documents}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">${labels.exit}</td>
+                                <td style="${cellStyle}">${exit}</td>
+                                <td style="${cellStyleCompany}">${cr.exit}</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Additional Comments</td>
+                                <td colspan="2" style="${cellStyle}">Kindly Mention</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Name & Job title of the Verifier:</td>
+                                <td colspan="2" style="${cellStyle}">Kindly Mention</td>
+                            </tr>
+                            <tr>
+                                <td style="${labelCellStyle}">Contact No./ E-mail ID of the Verifier:</td>
+                                <td colspan="2" style="${cellStyle}">Kindly Mention</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>Kindly note that your inputs and feedback given would assist our client in making a prompt hiring decision and therefore we await your response for the same at the earliest.</p>
+                    <p>We look forward to your kind cooperation and thank you in anticipation.</p>
+                </div>
+                `;
+            }
+        }
+
+        function updatePreview() {
+            document.getElementById('emailBody').innerHTML = generateEmailHtml();
+        }
+
+        function openInGmail() {
+            const candidateName = document.getElementById('candidateName').value || '[Candidate Name]';
+            const subject = `Request for Ex-employment Verification - (${candidateName})`;
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}`;
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Gmail opened! Paste content (Ctrl+V).', 'success');
+        }
+
+        async function copyEmailBody() {
+            try {
+                const htmlContent = generateEmailHtml();
+                const textContent = "Please enable HTML email to view this content."; // Fallback
+
+                const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                const blobText = new Blob([textContent], { type: 'text/plain' });
+                const data = [new ClipboardItem({
+                    'text/html': blobHtml,
+                    'text/plain': blobText
+                })];
+
+                await navigator.clipboard.write(data);
+                VimtraTools.showToast('Email body copied! Paste in Gmail.', 'success');
+            } catch (err) {
+                console.error('Clipboard error:', err);
+                VimtraTools.showToast('Clipboard error. Check console.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Attach event listeners
+            document.getElementById('companySelect').addEventListener('change', updatePreview);
+            document.getElementById('styleSelect').addEventListener('change', updatePreview);
+
+            // Attach to all inputs
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+
+            // Initial render
+            updatePreview();
+        });
+    </script>
+</body>
+
+</html>

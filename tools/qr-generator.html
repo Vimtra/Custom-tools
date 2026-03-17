@@ -385,7 +385,7 @@
             logoSelect.addEventListener('change', (e) => {
                 const key = e.target.value;
                 if (key && COMPANY_THEMES[key]) {
-                    uploadedLogo = COMPANY_THEMES[key].logoData; // Base64 from data file
+                    uploadedLogo = COMPANY_THEMES[key].logoDataSignature || COMPANY_THEMES[key].logoData;
                     document.getElementById('logoName').textContent = "Selected: " + VimtraTools.COMPANIES[key].name;
                     document.getElementById('logoName').style.display = 'block';
                 } else {

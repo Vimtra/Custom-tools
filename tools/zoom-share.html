@@ -426,11 +426,12 @@ Passcode: 240892"></textarea>
 
                         <div class="email-actions">
                             <button class="btn btn-primary" onclick="openInGmail()">
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                                    style="margin-right: 8px;">
                                     <path
                                         d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                                 </svg>
-                                Open in Gmail
+                                Open Gmail (Paste Here)
                             </button>
                             <button class="btn btn-secondary" onclick="copyEmailContent()">
                                 <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
@@ -826,22 +827,24 @@ ${company.name}`
             };
         }
 
-        // Open in Gmail (Text Only)
+        // Open in Gmail (Blank Compose)
         function openInGmail() {
             const email = document.getElementById('recipientEmail').value;
-            const { subject, body } = generatePlainText();
+            const topic = document.getElementById('meetingTopic').value || 'Zoom Meeting';
 
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            // Gmail compose URL with TO and SUBJECT only (Body cannot be rich HTML via URL)
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(`Zoom Meeting: ${topic}`)}`;
 
             window.open(gmailUrl, '_blank');
-            VimtraTools.showToast('Opening Gmail (Text Only). For styling: click "Copy Email Body" -> Paste in Gmail.', 'success');
+            VimtraTools.showToast('Gmail opened! Press Ctrl+V (Cmd+V) to paste the email body.', 'success');
         }
 
         // Copy Rich HTML to Clipboard
         async function copyEmailContent() {
             try {
                 const htmlContent = generateRichHtml();
-                const textContent = generatePlainText().body;
+                // Create a temporary text version just for clipboard compatibility, but HTML is primary
+                const textContent = "Please paste this email into a client that supports HTML.";
 
                 const blobHtml = new Blob([htmlContent], { type: 'text/html' });
                 const blobText = new Blob([textContent], { type: 'text/plain' });
@@ -851,7 +854,7 @@ ${company.name}`
                 })];
 
                 await navigator.clipboard.write(data);
-                VimtraTools.showToast('Formatted email copied! Paste it in Gmail.', 'success');
+                VimtraTools.showToast('Formatted email copied! Click "Open Gmail" and paste it.', 'success');
             } catch (err) {
                 console.error('Clipboard error:', err);
                 VimtraTools.showToast('Clipboard error. Check console.', 'error');
