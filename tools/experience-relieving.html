@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generate official Experience Certificates, Relieving Letters, and HR Email Templates for Vimtra and Startekpro">
+    <title>Experience & Relieving Letter Generator | Custom Tools</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf.js for high quality PDF downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #1e1e24;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-select option {
+            background: #1e1e24;
+            color: var(--text-primary);
+        }
+
+        /* View Tabs Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Preview Container & A4 Letterhead Sheet */
+        .preview-wrapper {
+            position: sticky;
+            top: 20px;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.15);
+            color: white;
+        }
+
+        .btn-action.btn-primary-action {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-action.btn-primary-action:hover {
+            background: var(--primary-light);
+        }
+
+        /* A4 Document Box */
+        .a4-document {
+            background: #ffffff;
+            color: #000000;
+            width: 100%;
+            min-height: 980px;
+            padding: 48px 56px 120px 56px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            font-family: Arial, Helvetica, sans-serif;
+            position: relative;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        /* Document Letterhead Top Header */
+        .doc-header {
+            margin-bottom: 30px;
+        }
+
+        .doc-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .doc-header-address {
+            text-align: right;
+            font-size: 11.5px;
+            line-height: 1.45;
+            color: #333333;
+            font-family: Arial, sans-serif;
+            text-align: justify;
+        }
+
+        .doc-header-redline {
+            width: 100%;
+            height: 2px;
+            background-color: #e31e24;
+            margin-top: 12px;
+            margin-bottom: 20px;
+        }
+
+        .doc-logo-img {
+            height: 60px;
+            max-width: 240px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .doc-date {
+            font-size: 14px;
+            color: #000000;
+            margin-top: 36px;
+            margin-bottom: 28px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Titles */
+        .doc-title-main {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            color: #000000;
+        }
+
+        .doc-subtitle {
+            text-align: center;
+            font-size: 14px;
+            text-decoration: underline;
+            text-transform: uppercase;
+            font-weight: normal;
+            margin-bottom: 40px;
+            color: #000000;
+        }
+
+        /* Document Body Text */
+        .doc-body-text {
+            font-size: 14px;
+            color: #000000;
+            margin-bottom: 24px;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        /* Key-Value Details Block for Experience Certificate */
+        .doc-details-block {
+            margin: 32px 0;
+            font-size: 14px;
+            line-height: 2.0;
+            color: #000000;
+        }
+
+        .doc-detail-row {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        .doc-detail-label {
+            width: 220px;
+            font-weight: normal;
+            color: #000000;
+        }
+
+        .doc-detail-value {
+            flex: 1;
+            color: #000000;
+        }
+
+        /* Sign-off Block */
+        .doc-signoff {
+            margin-top: 50px;
+            page-break-inside: avoid;
+        }
+
+        .doc-signoff-for {
+            font-weight: bold;
+            font-size: 14px;
+            color: #000000;
+            margin-bottom: 12px;
+        }
+
+        .doc-stamp-sign-area {
+            position: relative;
+            height: 95px;
+            width: 280px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .doc-sign-img {
+            max-height: 65px;
+            max-width: 150px;
+            object-fit: contain;
+            position: absolute;
+            left: 0;
+            top: 15px;
+            z-index: 1; /* Signature behind stamp */
+        }
+
+        .doc-stamp-img {
+            max-height: 95px;
+            max-width: 140px;
+            object-fit: contain;
+            position: absolute;
+            left: 75px;
+            top: 0;
+            z-index: 2; /* Stamp always overlays signature */
+            opacity: 0.9;
+        }
+
+        /* Default Placeholder Boxes if no image uploaded */
+        .placeholder-sign-box {
+            border: 1px dashed #bbb;
+            background: #fafafa;
+            border-radius: 4px;
+            padding: 8px 14px;
+            font-size: 11px;
+            color: #888;
+            display: inline-block;
+        }
+
+        .doc-authorised {
+            font-weight: bold;
+            font-size: 14px;
+            color: #000000;
+            text-transform: uppercase;
+        }
+
+        /* Footer Letterhead Decoration & Address */
+        .doc-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding-bottom: 12px;
+            pointer-events: none;
+        }
+
+        /* Startekpro Red Corner Graphic Accent */
+        .startek-corner-accent {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 140px 0 0 240px;
+            border-color: transparent transparent transparent #e31e24;
+            z-index: 1;
+        }
+
+        .doc-footer-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 40px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .doc-footer-company-name {
+            font-weight: bold;
+            color: #e31e24;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .doc-footer-address {
+            color: #333333;
+        }
+
+        .doc-footer-contact {
+            color: #c41e3a;
+            font-size: 10.5px;
+            margin-top: 2px;
+        }
+
+        .doc-footer-contact a {
+            color: #c41e3a;
+            text-decoration: none;
+        }
+
+        /* Email Preview Tab Styles */
+        .email-template-box {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        .email-header-bar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 24px 32px;
+            color: white;
+        }
+
+        .email-subject-line {
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .email-body-content {
+            padding: 32px;
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .header,
+            .page-header,
+            .two-column>div:first-child,
+            .actions-bar,
+            .tab-nav {
+                display: none !important;
+            }
+
+            .a4-document,
+            .a4-document * {
+                visibility: visible;
+            }
+
+            .a4-document {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                box-shadow: none !important;
+                padding: 40px 48px 100px 48px !important;
+            }
+
+            .startek-corner-accent {
+                border-width: 160px 0 0 260px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="theme-startekpro">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <a href="../index.html">
+                        <img id="headerLogo" src="../logos/Startek Pro.png" alt="Company Logo" class="logo-img">
+                    </a>
+                    <span class="app-title">Experience & Relieving Letter Generator</span>
+                </div>
+                <div class="company-selector">
+                    <select id="companySelect" class="company-select">
+                        <option value="startekpro">Startekpro</option>
+                        <option value="vimtra">Vimtra Ventures</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="tool-container">
+        <div class="page-header">
+            <div class="page-title">
+                <a href="../index.html" class="back-btn" title="Back to Dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </a>
+                <div>
+                    <h1>Experience & Relieving Letter Generator</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Generate official Experience Certificates, Relieving Letters, and HR Email Templates</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-column">
+            <!-- Form Input Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Employee Details</h3>
+                </div>
+                <div class="input-section">
+                    <form id="letterForm">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 0 0 100px;">
+                                <label class="form-label">Salutation</label>
+                                <select id="salutation" class="form-select">
+                                    <option value="Ms.">Ms.</option>
+                                    <option value="Mr.">Mr.</option>
+                                    <option value="Mrs.">Mrs.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" id="fullName" class="form-input" value="Varanasi Nikhila" placeholder="Employee Name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Employee ID *</label>
+                                <input type="text" id="empId" class="form-input" value="STARTEK-089" placeholder="e.g. STARTEK-089" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Designation *</label>
+                                <input type="text" id="designation" class="form-input" value="OPT Recruiter" placeholder="e.g. OPT Recruiter" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Department / Division *</label>
+                                <input type="text" id="department" class="form-input" value="Sales" placeholder="e.g. Sales / HR" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Salary / CTC *</label>
+                                <input type="text" id="salary" class="form-input" value="2,40,000/-" placeholder="e.g. 2,40,000/-" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date of Joining (DOJ) *</label>
+                                <input type="date" id="doj" class="form-input" value="2025-06-17" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Working Date (LWD) *</label>
+                                <input type="date" id="lwd" class="form-input" value="2026-06-12" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Letter / Issue Date *</label>
+                            <input type="date" id="issueDate" class="form-input" value="2026-06-16" required>
+                        </div>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+                        <div class="card-title" style="font-size: 14px; margin-bottom: 12px; color: var(--primary-light);">Sign & Stamp Assets (Optional Uploads)</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Upload Signature Image</label>
+                            <input type="file" id="sigUpload" class="form-input" accept="image/*">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Upload Company Seal / Stamp Image</label>
+                            <input type="file" id="stampUpload" class="form-input" accept="image/*">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Preview & Actions Panel -->
+            <div class="preview-wrapper">
+                <!-- Navigation Tabs -->
+                <div class="tab-nav">
+                    <button type="button" class="tab-btn active" onclick="switchTab('relieving')">Relieving Letter</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('experience')">Experience Certificate</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('email')">Email Template</button>
+                </div>
+
+                <!-- Actions Bar -->
+                <div class="actions-bar" id="actionsBar">
+                    <button type="button" class="btn-action btn-primary-action" onclick="downloadPDF()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download PDF
+                    </button>
+                    <button type="button" class="btn-action" onclick="printDoc()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Print
+                    </button>
+                </div>
+
+                <!-- Email Actions Bar -->
+                <div class="actions-bar" id="emailActionsBar" style="display: none;">
+                    <button type="button" class="btn-action btn-primary-action" onclick="sendEmailDraft()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13"></path>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                        </svg>
+                        Open Gmail Draft
+                    </button>
+                </div>
+
+                <!-- TAB 1: RELIEVING LETTER PREVIEW -->
+                <div id="relievingTab" class="tab-content">
+                    <div id="relievingDocContainer" class="a4-document">
+                        <!-- Header -->
+                        <div class="doc-header">
+                            <div class="doc-header-top">
+                                <img id="relievingLogo" src="../logos/Startek Pro.png" alt="Company Logo" class="doc-logo-img">
+                                <div id="relievingHeaderAddress" class="doc-header-address" style="display: none;">
+                                    No.11 &amp; 12, III Floor, Hospital Road,<br>
+                                    Indira Priyadarshini Nagar,<br>
+                                    Perumbakkam, Chennai-600 100.<br>
+                                    Phone: +91 44 8939185996,<br>
+                                    Web: www.vimtra.com
+                                </div>
+                            </div>
+                            <div id="relievingHeaderRedLine" class="doc-header-redline" style="display: none;"></div>
+                            <div id="relievingDate" class="doc-date">Date: 16th June 2026.</div>
+                        </div>
+
+                        <!-- Titles -->
+                        <div class="doc-title-main">RELEIVING LETTER</div>
+                        <div class="doc-subtitle">TO WHOMSOEVER IT MAY CONCERN</div>
+
+                        <!-- Body Text -->
+                        <div class="doc-body-text" id="relievingPara1">
+                            This is to certify that Ms. Varanasi Nikhila was employed with us as an OPT Recruiter from 17/06/2025 to 12/06/2026 and has been relieved from her duties as of closing hours on 12/06/2026.
+                        </div>
+
+                        <div class="doc-body-text" id="relievingPara2">
+                            Ms. Varanasi Nikhila was designated as OPT Recruiter at the time of her leaving the organization.
+                        </div>
+
+                        <div class="doc-body-text" id="relievingPara3">
+                            We wish her all the best in her future endeavors.
+                        </div>
+
+                        <!-- Sign-off Block -->
+                        <div class="doc-signoff">
+                            <div class="doc-signoff-for" id="relievingSignFor">For STARTEKPRO PVT LTD</div>
+                            <div class="doc-stamp-sign-area">
+                                <img id="relievingStampImg" src="" alt="Stamp" class="doc-stamp-img" style="display:none;">
+                                <img id="relievingSigImg" src="" alt="Signature" class="doc-sign-img" style="display:none;">
+                                <div id="relievingSignPlaceholder" class="placeholder-sign-box">[ Signature &amp; Stamp Area ]</div>
+                            </div>
+                            <div class="doc-authorised">AUTHORISED SIGNATORY</div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="doc-footer" id="relievingFooter">
+                            <div id="relievingCornerAccent" class="startek-corner-accent"></div>
+                            <div class="doc-footer-content" id="relievingFooterContent">
+                                <div class="doc-footer-company-name">STARTEKPRO Private Limited</div>
+                                <div class="doc-footer-address">07th Floor, DSL Abacus IT Park, Beside DSL Virtue Mall, Uppal Khalsa Village, IDA Uppal, Hyderabad-39</div>
+                                <div class="doc-footer-contact">Ph: +91 98480 00124 | Email: info@startechnologys.com | Website: startechnologys.com.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: EXPERIENCE CERTIFICATE PREVIEW -->
+                <div id="experienceTab" class="tab-content" style="display: none;">
+                    <div id="experienceDocContainer" class="a4-document">
+                        <!-- Header -->
+                        <div class="doc-header">
+                            <div class="doc-header-top">
+                                <img id="experienceLogo" src="../logos/Startek Pro.png" alt="Company Logo" class="doc-logo-img">
+                                <div id="experienceHeaderAddress" class="doc-header-address" style="display: none;">
+                                    No.11 &amp; 12, III Floor, Hospital Road,<br>
+                                    Indira Priyadarshini Nagar,<br>
+                                    Perumbakkam, Chennai-600 100.<br>
+                                    Phone: +91 44 8939185996,<br>
+                                    Web: www.vimtra.com
+                                </div>
+                            </div>
+                            <div id="experienceHeaderRedLine" class="doc-header-redline" style="display: none;"></div>
+                            <div id="experienceDate" class="doc-date">Date: 16th June 2026.</div>
+                        </div>
+
+                        <!-- Titles -->
+                        <div class="doc-title-main">EXPERIENCE CERTIFICATE</div>
+                        <div class="doc-subtitle">TO WHOMSOEVER IT MAY CONCERN</div>
+
+                        <!-- Body Text -->
+                        <div class="doc-body-text" id="experiencePara1">
+                            This is to certify that Ms. Varanasi Nikhila, Emp ID STARTEK-089 was in the employment of our organization from 17/06/2025 to 12/06/2026.
+                        </div>
+
+                        <!-- Key-Value Details List -->
+                        <div class="doc-details-block">
+                            <div class="doc-detail-row">
+                                <div class="doc-detail-label">Full Name:</div>
+                                <div class="doc-detail-value" id="expFullName">Ms. Varanasi Nikhila</div>
+                            </div>
+                            <div class="doc-detail-row">
+                                <div class="doc-detail-label">Designation:</div>
+                                <div class="doc-detail-value" id="expDesignation">OPT Recruiter</div>
+                            </div>
+                            <div class="doc-detail-row">
+                                <div class="doc-detail-label">Department / Division:</div>
+                                <div class="doc-detail-value" id="expDepartment">Sales</div>
+                            </div>
+                            <div class="doc-detail-row">
+                                <div class="doc-detail-label">CTC:</div>
+                                <div class="doc-detail-value" id="expSalary">2,40,000/-</div>
+                            </div>
+                            <div class="doc-detail-row">
+                                <div class="doc-detail-label">Last date of working:</div>
+                                <div class="doc-detail-value" id="expLwdWords">12th June 2026</div>
+                            </div>
+                        </div>
+
+                        <!-- Sign-off Block -->
+                        <div class="doc-signoff">
+                            <div class="doc-signoff-for" id="experienceSignFor">For STARTEKPRO PVT LTD</div>
+                            <div class="doc-stamp-sign-area">
+                                <img id="experienceStampImg" src="" alt="Stamp" class="doc-stamp-img" style="display:none;">
+                                <img id="experienceSigImg" src="" alt="Signature" class="doc-sign-img" style="display:none;">
+                                <div id="experienceSignPlaceholder" class="placeholder-sign-box">[ Signature &amp; Stamp Area ]</div>
+                            </div>
+                            <div class="doc-authorised">AUTHORISED SIGNATORY</div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="doc-footer" id="experienceFooter">
+                            <div id="experienceCornerAccent" class="startek-corner-accent"></div>
+                            <div class="doc-footer-content" id="experienceFooterContent">
+                                <div class="doc-footer-company-name">STARTEKPRO Private Limited</div>
+                                <div class="doc-footer-address">07th Floor, DSL Abacus IT Park, Beside DSL Virtue Mall, Uppal Khalsa Village, IDA Uppal, Hyderabad-39</div>
+                                <div class="doc-footer-contact">Ph: +91 98480 00124 | Email: info@startechnologys.com | Website: startechnologys.com.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: EMAIL TEMPLATE PREVIEW -->
+                <div id="emailTab" class="tab-content" style="display: none;">
+                    <div class="email-template-box">
+                        <div class="email-header-bar">
+                            <div style="font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Email Subject</div>
+                            <div class="email-subject-line" id="emailSubject">
+                                Experience Certificate &amp; Relieving Letter - Varanasi Nikhila (STARTEK-089)
+                            </div>
+                        </div>
+                        <div class="email-body-content" id="emailBodyContainer">
+                            <p>Dear <span id="emailSalutation">Ms.</span> <span id="emailName">Varanasi Nikhila</span>,</p>
+                            <p>Greetings!</p>
+                            <p>Please find attached the following documents for your reference:</p>
+                            <ul style="margin-top: 6px; margin-bottom: 16px; padding-left: 20px; color: #333;">
+                                <li>Relieving Letter</li>
+                                <li>Experience Certificate</li>
+                                <li>Payslips</li>
+                            </ul>
+                            <p>We would also like to confirm that all your dues have been cleared, and there are no pending payments or recoveries from either side.</p>
+                            <p>If you require any further assistance or have any additional queries, please feel free to reach out to us.</p>
+                            <p>We wish you all the very best in your future endeavors.</p>
+                            <br>
+                            <p style="margin-bottom: 2px;">Best regards,</p>
+                            <p style="margin-top: 0; font-weight: 600; color: #1a1a1a;">HR Team<br><span id="emailCompanyFooter">STARTEKPRO Private Limited</span></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/app.js"></script>
+    <script>
+        let currentTab = 'relieving';
+        let uploadedSigUrl = '';
+        let uploadedStampUrl = '';
+
+        // Helper: Convert YYYY-MM-DD string to numeric DD/MM/YYYY
+        function formatNumericDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Helper: Convert YYYY-MM-DD string to Ordinal Date in Words (e.g. 16th June 2026)
+        function formatOrdinalDate(dateStr, addTrailingPeriod = false) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            const day = d.getDate();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const month = monthNames[d.getMonth()];
+            const year = d.getFullYear();
+
+            // Ordinal suffix
+            let suffix = 'th';
+            if (day % 10 === 1 && day !== 11) suffix = 'st';
+            else if (day % 10 === 2 && day !== 12) suffix = 'nd';
+            else if (day % 10 === 3 && day !== 13) suffix = 'rd';
+
+            return `${day}${suffix} ${month} ${year}${addTrailingPeriod ? '.' : ''}`;
+        }
+
+        // Helper: Get Pronouns based on Salutation
+        function getPronouns(salutation) {
+            if (salutation === 'Mr.') {
+                return { possessive: 'his', objective: 'him', subjective: 'he' };
+            }
+            // Ms. / Mrs.
+            return { possessive: 'her', objective: 'her', subjective: 'she' };
+        }
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+
+            if (tabName === 'relieving') {
+                document.getElementById('relievingTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('actionsBar').style.display = 'flex';
+                document.getElementById('emailActionsBar').style.display = 'none';
+            } else if (tabName === 'experience') {
+                document.getElementById('experienceTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('actionsBar').style.display = 'flex';
+                document.getElementById('emailActionsBar').style.display = 'none';
+            } else if (tabName === 'email') {
+                document.getElementById('emailTab').style.display = 'block';
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('actionsBar').style.display = 'none';
+                document.getElementById('emailActionsBar').style.display = 'flex';
+            }
+        }
+
+        // Update Document Previews from Form State
+        function updatePreviews() {
+            const companyKey = document.getElementById('companySelect').value;
+            const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['startekpro'];
+
+            const salutation = document.getElementById('salutation').value;
+            const fullName = document.getElementById('fullName').value || 'Varanasi Nikhila';
+            const empId = document.getElementById('empId').value || 'STARTEK-089';
+            const designation = document.getElementById('designation').value || 'OPT Recruiter';
+            const department = document.getElementById('department').value || 'Sales';
+            const salary = document.getElementById('salary').value || '2,40,000/-';
+            
+            const dojRaw = document.getElementById('doj').value;
+            const lwdRaw = document.getElementById('lwd').value;
+            const issueDateRaw = document.getElementById('issueDate').value;
+
+            const dojNumeric = formatNumericDate(dojRaw);
+            const lwdNumeric = formatNumericDate(lwdRaw);
+            
+            const issueDateOrdinal = formatOrdinalDate(issueDateRaw, true); // Date: 16th June 2026.
+            const lwdOrdinal = formatOrdinalDate(lwdRaw, false); // 12th June 2026
+
+            const pronouns = getPronouns(salutation);
+            const fullTitleName = `${salutation} ${fullName}`;
+
+            // Base Path for logos
+            const basePath = VimtraTools.getBasePath();
+            const logoPath = basePath + companyData.logo;
+
+            // Company specific legal names & footers
+            let companyLegalName = 'STARTEKPRO PVT LTD';
+            let companyFullName = 'STARTEKPRO Private Limited';
+            let addressText = '07th Floor, DSL Abacus IT Park, Beside DSL Virtue Mall, Uppal Khalsa Village, IDA Uppal, Hyderabad-39';
+            let contactText = 'Ph: +91 98480 00124 | Email: info@startechnologys.com | Website: startechnologys.com.';
+            let isStartek = (companyKey === 'startekpro');
+
+            if (companyKey === 'vimtra') {
+                companyLegalName = 'VIMTRA VENTURES LLC';
+                companyFullName = 'Vimtra Ventures';
+                addressText = '45 Rockefeller plaza, Suite 2000, New York, 10111, USA';
+                contactText = 'Email: info@vimtra.com | Website: vimtra.com';
+            }
+
+            // --- UPDATE RELIEVING LETTER ---
+            document.getElementById('relievingLogo').src = logoPath;
+            document.getElementById('relievingDate').textContent = `Date: ${issueDateOrdinal}`;
+            document.getElementById('relievingPara1').textContent = 
+                `This is to certify that ${fullTitleName} was employed with us as an ${designation} from ${dojNumeric} to ${lwdNumeric} and has been relieved from ${pronouns.possessive} duties as of closing hours on ${lwdNumeric}.`;
+            document.getElementById('relievingPara2').textContent = 
+                `${fullTitleName} was designated as ${designation} at the time of ${pronouns.possessive} leaving the organization.`;
+            document.getElementById('relievingPara3').textContent = 
+                `We wish ${pronouns.objective} all the best in ${pronouns.possessive} future endeavors.`;
+            document.getElementById('relievingSignFor').textContent = `For ${companyLegalName}`;
+
+            // --- UPDATE EXPERIENCE CERTIFICATE ---
+            document.getElementById('experienceLogo').src = logoPath;
+            document.getElementById('experienceDate').textContent = `Date: ${issueDateOrdinal}`;
+            document.getElementById('experiencePara1').textContent = 
+                `This is to certify that ${fullTitleName}, Emp ID ${empId} was in the employment of our organization from ${dojNumeric} to ${lwdNumeric}.`;
+            document.getElementById('expFullName').textContent = fullTitleName;
+            document.getElementById('expDesignation').textContent = designation;
+            document.getElementById('expDepartment').textContent = department;
+            document.getElementById('expSalary').textContent = salary;
+            document.getElementById('expLwdWords').textContent = lwdOrdinal;
+            document.getElementById('experienceSignFor').textContent = `For ${companyLegalName}`;
+
+            // --- HEADER & FOOTER LAYOUT SWITCHING ---
+            ['relieving', 'experience'].forEach(prefix => {
+                const headerAddress = document.getElementById(prefix + 'HeaderAddress');
+                const headerRedLine = document.getElementById(prefix + 'HeaderRedLine');
+                const footer = document.getElementById(prefix + 'Footer');
+                const cornerAccent = document.getElementById(prefix + 'CornerAccent');
+                const dateEl = document.getElementById(prefix + 'Date');
+
+                if (isStartek) {
+                    headerAddress.style.display = 'none';
+                    headerRedLine.style.display = 'none';
+                    footer.style.display = 'block';
+                    cornerAccent.style.display = 'block';
+                    dateEl.style.marginTop = '36px';
+
+                    const footerContent = document.getElementById(prefix + 'FooterContent');
+                    footerContent.innerHTML = `
+                        <div class="doc-footer-company-name" style="color: #e31e24;">${companyFullName}</div>
+                        <div class="doc-footer-address">${addressText}</div>
+                        <div class="doc-footer-contact">${contactText}</div>
+                    `;
+                } else {
+                    // Vimtra Mode: Show Header Address & Red Line, Remove Footer completely
+                    headerAddress.style.display = 'block';
+                    headerRedLine.style.display = 'block';
+                    footer.style.display = 'none';
+                    cornerAccent.style.display = 'none';
+                    dateEl.style.marginTop = '16px';
+                }
+            });
+
+            // Determine active signature & stamp (Uploaded file overrides company default)
+            const defaultSigPath = companyData.signature ? (basePath + companyData.signature) : '';
+            const defaultStampPath = companyData.stamp ? (basePath + companyData.stamp) : '';
+
+            const activeSigUrl = uploadedSigUrl || defaultSigPath;
+            const activeStampUrl = uploadedStampUrl || defaultStampPath;
+
+            // --- UPDATE SIGNATURE & STAMP IMAGES ---
+            ['relieving', 'experience'].forEach(prefix => {
+                const sigImg = document.getElementById(prefix + 'SigImg');
+                const stampImg = document.getElementById(prefix + 'StampImg');
+                const placeholder = document.getElementById(prefix + 'SignPlaceholder');
+
+                if (activeSigUrl) {
+                    sigImg.src = activeSigUrl;
+                    sigImg.style.display = 'block';
+                } else {
+                    sigImg.style.display = 'none';
+                }
+
+                if (activeStampUrl) {
+                    stampImg.src = activeStampUrl;
+                    stampImg.style.display = 'block';
+                } else {
+                    stampImg.style.display = 'none';
+                }
+
+                if (activeSigUrl || activeStampUrl) {
+                    placeholder.style.display = 'none';
+                } else {
+                    placeholder.style.display = 'inline-block';
+                }
+            });
+
+            // --- UPDATE EMAIL TEMPLATE ---
+            document.getElementById('emailSubject').textContent = `Relieving & Experience Documents - ${fullName} (${empId})`;
+            document.getElementById('emailSalutation').textContent = salutation;
+            document.getElementById('emailName').textContent = fullName;
+            document.getElementById('emailCompanyFooter').textContent = companyFullName;
+        }
+
+        // Handle Image Uploads
+        document.getElementById('sigUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedSigUrl = evt.target.result;
+                    updatePreviews();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('stampUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedStampUrl = evt.target.result;
+                    updatePreviews();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // PDF Download using html2pdf (Scrolls to top to prevent Y-offset whitespace, captures visible element)
+        function downloadPDF() {
+            const containerId = (currentTab === 'relieving') ? 'relievingDocContainer' : 'experienceDocContainer';
+            const fileName = (currentTab === 'relieving') ? 'Relieving-Letter.pdf' : 'Experience-Certificate.pdf';
+            const element = document.getElementById(containerId);
+
+            // Temporarily scroll to top (0, 0) so html2canvas captures with 0 top offset
+            const savedScrollY = window.scrollY;
+            window.scrollTo(0, 0);
+
+            const opt = {
+                margin: 0,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    onclone: function(clonedDoc) {
+                        const target = clonedDoc.getElementById(containerId);
+                        if (target) {
+                            target.style.boxShadow = 'none';
+                            target.style.borderRadius = '0';
+                        }
+                    }
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                window.scrollTo(0, savedScrollY);
+            }).catch(err => {
+                console.error(err);
+                window.scrollTo(0, savedScrollY);
+            });
+
+            VimtraTools.showToast('Generating PDF download...', 'success');
+        }
+
+        // Print Document
+        function printDoc() {
+            window.print();
+        }
+
+        // Open Gmail Draft in browser tab with prefilled Subject and Body
+        function sendEmailDraft() {
+            const salutation = document.getElementById('salutation').value;
+            const fullName = document.getElementById('fullName').value || 'Varanasi Nikhila';
+            const empId = document.getElementById('empId').value || 'STARTEK-089';
+            const companyKey = document.getElementById('companySelect').value;
+            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : 'STARTEKPRO Private Limited';
+
+            const subject = `Relieving & Experience Documents - ${fullName} (${empId})`;
+            
+            const bodyText = `Dear ${salutation} ${fullName},\n\n` +
+                `Greetings!\n\n` +
+                `Please find attached the following documents for your reference:\n\n` +
+                `• Relieving Letter\n` +
+                `• Experience Certificate\n` +
+                `• Payslips\n\n` +
+                `We would also like to confirm that all your dues have been cleared, and there are no pending payments or recoveries from either side.\n\n` +
+                `If you require any further assistance or have any additional queries, please feel free to reach out to us.\n\n` +
+                `We wish you all the very best in your future endeavors.\n\n` +
+                `Best regards,\n` +
+                `HR Team\n` +
+                `${companyFullName}`;
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Opening Gmail web draft...', 'success');
+        }
+
+        // Event Listeners for Live Form Input
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.form-input, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreviews);
+                input.addEventListener('change', updatePreviews);
+            });
+
+            // Company selection change
+            const companySelect = document.getElementById('companySelect');
+            if (companySelect) {
+                companySelect.addEventListener('change', (e) => {
+                    VimtraTools.setCompany(e.target.value);
+                    updatePreviews();
+                });
+            }
+
+            // Initial setup
+            updatePreviews();
+        });
+    </script>
+</body>
+
+</html>
