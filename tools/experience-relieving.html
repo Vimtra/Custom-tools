@@ -19,7 +19,7 @@
 
         .two-column {
             display: grid;
-            grid-template-columns: 440px 1fr;
+            grid-template-columns: 420px 1fr;
             gap: 32px;
             align-items: start;
         }
@@ -102,11 +102,13 @@
         .tab-nav {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             background: rgba(255, 255, 255, 0.03);
             padding: 6px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 210mm;
         }
 
         .tab-btn {
@@ -139,13 +141,47 @@
         .preview-wrapper {
             position: sticky;
             top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .actions-bar {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             justify-content: flex-end;
+            width: 100%;
+            max-width: 210mm;
+        }
+
+        .tab-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .a4-preview-notice {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 210mm;
+            max-width: 100%;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .a4-badge {
+            background: rgba(var(--primary-rgb), 0.15);
+            color: var(--primary-light);
+            border: 1px solid rgba(var(--primary-rgb), 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.5px;
         }
 
         .btn-action {
@@ -179,19 +215,24 @@
             background: var(--primary-light);
         }
 
-        /* A4 Document Box */
+        /* A4 Document Box - Standard A4 210mm x 297mm */
         .a4-document {
             background: #ffffff;
             color: #000000;
-            width: 100%;
-            min-height: 980px;
+            width: 210mm;
+            max-width: 100%;
+            height: 297mm;
+            min-height: 297mm;
+            max-height: 297mm;
             padding: 48px 56px 120px 56px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 14px 45px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.2);
             border-radius: 4px;
             font-family: Arial, Helvetica, sans-serif;
             position: relative;
             box-sizing: border-box;
             line-height: 1.6;
+            margin: 0 auto;
+            overflow: hidden;
         }
 
         /* Document Letterhead Top Header */
@@ -332,6 +373,7 @@
             top: 0;
             z-index: 2; /* Stamp always overlays signature */
             opacity: 0.9;
+            mix-blend-mode: multiply;
         }
 
         /* Default Placeholder Boxes if no image uploaded */
@@ -350,6 +392,13 @@
             font-size: 14px;
             color: #000000;
             text-transform: uppercase;
+        }
+
+        .doc-signatory-title {
+            font-weight: 500;
+            font-size: 13px;
+            color: #222222;
+            margin-top: 2px;
         }
 
         /* Footer Letterhead Decoration & Address */
@@ -413,12 +462,57 @@
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             color: #333;
+            width: 100%;
         }
 
         .email-header-bar {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            padding: 24px 32px;
+            padding: 20px 24px;
             color: white;
+        }
+
+        .email-card-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .email-badge {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .email-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .btn-card-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
         }
 
         .email-subject-line {
@@ -434,7 +528,7 @@
         }
 
         .email-body-content {
-            padding: 32px;
+            padding: 28px 24px;
             font-family: 'Inter', Arial, sans-serif;
             font-size: 14px;
             line-height: 1.7;
@@ -443,15 +537,44 @@
 
         /* Print Media Styles */
         @media print {
-            body * {
-                visibility: hidden;
+            @page {
+                size: A4 portrait;
+                margin: 0mm !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                background: #ffffff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                overflow: hidden !important;
             }
 
             .header,
             .page-header,
             .two-column>div:first-child,
             .actions-bar,
-            .tab-nav {
+            .tab-nav,
+            .a4-preview-notice {
+                display: none !important;
+            }
+
+            .tab-content {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .tab-content:not([style*="display: flex"]):not([style*="display: block"]):not([style=""]) {
                 display: none !important;
             }
 
@@ -461,16 +584,34 @@
             }
 
             .a4-document {
-                position: absolute;
-                left: 0;
-                top: 0;
+                position: relative !important;
                 width: 100% !important;
+                max-width: 210mm !important;
+                height: 272mm !important;
+                min-height: 272mm !important;
+                max-height: 272mm !important;
+                margin: 0 auto !important;
                 box-shadow: none !important;
-                padding: 40px 48px 100px 48px !important;
+                border-radius: 0 !important;
+                box-sizing: border-box !important;
+                padding: 30px 48px 85px 48px !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+                break-after: avoid !important;
+                break-inside: avoid !important;
+                overflow: hidden !important;
             }
 
             .startek-corner-accent {
-                border-width: 160px 0 0 260px !important;
+                border-width: 120px 0 0 200px !important;
+            }
+
+            .doc-footer {
+                position: absolute !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                padding-bottom: 8px !important;
             }
         }
     </style>
@@ -492,6 +633,7 @@
                     <select id="companySelect" class="company-select">
                         <option value="startekpro">Startekpro</option>
                         <option value="vimtra">Vimtra Ventures</option>
+                        <option value="tekcog">Tekcog</option>
                     </select>
                 </div>
             </div>
@@ -530,11 +672,12 @@
                                     <option value="Ms.">Ms.</option>
                                     <option value="Mr.">Mr.</option>
                                     <option value="Mrs.">Mrs.</option>
+                                    <option value="">None</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Full Name *</label>
-                                <input type="text" id="fullName" class="form-input" value="Varanasi Nikhila" placeholder="Employee Name" required>
+                                <input type="text" id="fullName" class="form-input" value="Kodimyala Soumya Sri" placeholder="Employee Name" required>
                             </div>
                         </div>
 
@@ -563,17 +706,23 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Date of Joining (DOJ) *</label>
-                                <input type="date" id="doj" class="form-input" value="2025-06-17" required>
+                                <input type="date" id="doj" class="form-input" value="2026-02-01" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Last Working Date (LWD) *</label>
-                                <input type="date" id="lwd" class="form-input" value="2026-06-12" required>
+                                <input type="date" id="lwd" class="form-input" value="2026-08-31" required>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Letter / Issue Date *</label>
-                            <input type="date" id="issueDate" class="form-input" value="2026-06-16" required>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Letter / Issue Date *</label>
+                                <input type="date" id="issueDate" class="form-input" value="2026-10-12" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Termination Date (for Termination Email) *</label>
+                                <input type="date" id="terminationDate" class="form-input" value="2026-08-31" required>
+                            </div>
                         </div>
 
                         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
@@ -598,7 +747,7 @@
                 <!-- Navigation Tabs -->
                 <div class="tab-nav">
                     <button type="button" class="tab-btn active" onclick="switchTab('relieving')">Relieving Letter</button>
-                    <button type="button" class="tab-btn" onclick="switchTab('experience')">Experience Certificate</button>
+                    <button type="button" class="tab-btn" id="expTabBtn" onclick="switchTab('experience')">Experience Certificate</button>
                     <button type="button" class="tab-btn" onclick="switchTab('email')">Email Template</button>
                 </div>
 
@@ -623,18 +772,43 @@
                 </div>
 
                 <!-- Email Actions Bar -->
-                <div class="actions-bar" id="emailActionsBar" style="display: none;">
-                    <button type="button" class="btn-action btn-primary-action" onclick="sendEmailDraft()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="actions-bar" id="emailActionsBar" style="display: none; flex-wrap: wrap;">
+                    <button type="button" class="btn-action btn-primary-action" onclick="copyEmailHtml('relieving')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy Relieving HTML
+                    </button>
+                    <button type="button" class="btn-action btn-primary-action" onclick="copyEmailHtml('termination')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy Termination HTML
+                    </button>
+                    <button type="button" class="btn-action" onclick="sendEmailDraft()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13"></path>
                             <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
                         </svg>
-                        Open Gmail Draft
+                        Gmail: Relieving
+                    </button>
+                    <button type="button" class="btn-action" onclick="sendTerminationEmailDraft()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13"></path>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                        </svg>
+                        Gmail: Termination
                     </button>
                 </div>
 
                 <!-- TAB 1: RELIEVING LETTER PREVIEW -->
                 <div id="relievingTab" class="tab-content">
+                    <div class="a4-preview-notice">
+                        <span><span class="a4-badge">A4 PREVIEW</span> 210 &times; 297 mm</span>
+                        <span>1:1 Print-Ready Letterhead</span>
+                    </div>
                     <div id="relievingDocContainer" class="a4-document">
                         <!-- Header -->
                         <div class="doc-header">
@@ -653,7 +827,7 @@
                         </div>
 
                         <!-- Titles -->
-                        <div class="doc-title-main">RELEIVING LETTER</div>
+                        <div class="doc-title-main">RELIEVING LETTER</div>
                         <div class="doc-subtitle">TO WHOMSOEVER IT MAY CONCERN</div>
 
                         <!-- Body Text -->
@@ -677,7 +851,8 @@
                                 <img id="relievingSigImg" src="" alt="Signature" class="doc-sign-img" style="display:none;">
                                 <div id="relievingSignPlaceholder" class="placeholder-sign-box">[ Signature &amp; Stamp Area ]</div>
                             </div>
-                            <div class="doc-authorised">AUTHORISED SIGNATORY</div>
+                            <div class="doc-authorised" id="relievingAuthorised">AUTHORISED SIGNATORY</div>
+                            <div class="doc-signatory-title" id="relievingSignatoryTitle" style="display:none;">Director</div>
                         </div>
 
                         <!-- Footer -->
@@ -694,6 +869,10 @@
 
                 <!-- TAB 2: EXPERIENCE CERTIFICATE PREVIEW -->
                 <div id="experienceTab" class="tab-content" style="display: none;">
+                    <div class="a4-preview-notice">
+                        <span><span class="a4-badge">A4 PREVIEW</span> 210 &times; 297 mm</span>
+                        <span>1:1 Print-Ready Letterhead</span>
+                    </div>
                     <div id="experienceDocContainer" class="a4-document">
                         <!-- Header -->
                         <div class="doc-header">
@@ -712,7 +891,7 @@
                         </div>
 
                         <!-- Titles -->
-                        <div class="doc-title-main">EXPERIENCE CERTIFICATE</div>
+                        <div class="doc-title-main" id="experienceDocTitle">EXPERIENCE CERTIFICATE</div>
                         <div class="doc-subtitle">TO WHOMSOEVER IT MAY CONCERN</div>
 
                         <!-- Body Text -->
@@ -734,7 +913,7 @@
                                 <div class="doc-detail-label">Department / Division:</div>
                                 <div class="doc-detail-value" id="expDepartment">Sales</div>
                             </div>
-                            <div class="doc-detail-row">
+                            <div class="doc-detail-row" id="expSalaryRow">
                                 <div class="doc-detail-label">CTC:</div>
                                 <div class="doc-detail-value" id="expSalary">2,40,000/-</div>
                             </div>
@@ -752,7 +931,8 @@
                                 <img id="experienceSigImg" src="" alt="Signature" class="doc-sign-img" style="display:none;">
                                 <div id="experienceSignPlaceholder" class="placeholder-sign-box">[ Signature &amp; Stamp Area ]</div>
                             </div>
-                            <div class="doc-authorised">AUTHORISED SIGNATORY</div>
+                            <div class="doc-authorised" id="experienceAuthorised">AUTHORISED SIGNATORY</div>
+                            <div class="doc-signatory-title" id="experienceSignatoryTitle" style="display:none;">Director</div>
                         </div>
 
                         <!-- Footer -->
@@ -767,17 +947,36 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: EMAIL TEMPLATE PREVIEW -->
-                <div id="emailTab" class="tab-content" style="display: none;">
-                    <div class="email-template-box">
+                <!-- TAB 3: EMAIL TEMPLATES PREVIEW -->
+                <div id="emailTab" class="tab-content" style="display: none; width: 100%; max-width: 680px;">
+                    <!-- Template 1: Relieving & Experience Documents Email -->
+                    <div class="email-template-box" id="relievingEmailBox">
                         <div class="email-header-bar">
-                            <div style="font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Email Subject</div>
+                            <div class="email-card-header-top">
+                                <span class="email-badge">Relieving &amp; Experience Email</span>
+                                <div class="email-card-actions">
+                                    <button type="button" class="btn-card-action" onclick="copyEmailHtml('relieving')">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                        Copy as HTML
+                                    </button>
+                                    <button type="button" class="btn-card-action" onclick="sendEmailDraft()">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 2L11 13"></path>
+                                            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                                        </svg>
+                                        Open Gmail
+                                    </button>
+                                </div>
+                            </div>
                             <div class="email-subject-line" id="emailSubject">
-                                Experience Certificate &amp; Relieving Letter - Varanasi Nikhila (STARTEK-089)
+                                Relieving &amp; Experience Documents - Kodimyala Soumya Sri (STARTEK-089)
                             </div>
                         </div>
                         <div class="email-body-content" id="emailBodyContainer">
-                            <p>Dear <span id="emailSalutation">Ms.</span> <span id="emailName">Varanasi Nikhila</span>,</p>
+                            <p>Dear <span id="emailSalutation">Ms. </span><span id="emailName">Kodimyala Soumya Sri</span>,</p>
                             <p>Greetings!</p>
                             <p>Please find attached the following documents for your reference:</p>
                             <ul style="margin-top: 6px; margin-bottom: 16px; padding-left: 20px; color: #333;">
@@ -793,6 +992,44 @@
                             <p style="margin-top: 0; font-weight: 600; color: #1a1a1a;">HR Team<br><span id="emailCompanyFooter">STARTEKPRO Private Limited</span></p>
                         </div>
                     </div>
+
+                    <!-- Template 2: Employment Termination Notice Email -->
+                    <div class="email-template-box" id="terminationEmailBox" style="margin-top: 28px;">
+                        <div class="email-header-bar" style="background: linear-gradient(135deg, #c53030 0%, #742a2a 100%);">
+                            <div class="email-card-header-top">
+                                <span class="email-badge" style="background: rgba(0, 0, 0, 0.25);">Termination Notice Email</span>
+                                <div class="email-card-actions">
+                                    <button type="button" class="btn-card-action" onclick="copyEmailHtml('termination')">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                        Copy as HTML
+                                    </button>
+                                    <button type="button" class="btn-card-action" onclick="sendTerminationEmailDraft()">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 2L11 13"></path>
+                                            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                                        </svg>
+                                        Open Gmail
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="email-subject-line" id="termSubject">
+                                Notice of Termination - Kodimyala Soumya Sri (STARTEK-089)
+                            </div>
+                        </div>
+                        <div class="email-body-content" id="termBodyContainer">
+                            <p>Dear <span id="termSalutation">Ms. </span><span id="termName">Kodimyala Soumya Sri</span>,</p>
+                            <p style="margin-top: 14px; line-height: 1.8;">
+                                We deeply regret to inform you that in continuation with the earlier communication and non-performance for last few months. We have to terminate your employment with <strong id="termCompanyLegal">Startekpro Pvt Ltd</strong> effective closing hours of <strong id="termEffectiveDateText">31st August 2026</strong>.
+                            </p>
+                            <p style="margin-top: 16px;">We wish you good luck in your future endeavors.</p>
+                            <br>
+                            <p style="margin-bottom: 2px;">Best regards,</p>
+                            <p style="margin-top: 0; font-weight: 600; color: #1a1a1a;">HR Team<br><span id="termCompanyFooter">STARTEKPRO Private Limited</span></p>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -800,6 +1037,7 @@
     </main>
 
     <script src="../js/app.js"></script>
+    <script src="../js/company-assets.js"></script>
     <script>
         let currentTab = 'relieving';
         let uploadedSigUrl = '';
@@ -851,12 +1089,12 @@
             document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
 
             if (tabName === 'relieving') {
-                document.getElementById('relievingTab').style.display = 'block';
+                document.getElementById('relievingTab').style.display = 'flex';
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 document.getElementById('actionsBar').style.display = 'flex';
                 document.getElementById('emailActionsBar').style.display = 'none';
             } else if (tabName === 'experience') {
-                document.getElementById('experienceTab').style.display = 'block';
+                document.getElementById('experienceTab').style.display = 'flex';
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('actionsBar').style.display = 'flex';
                 document.getElementById('emailActionsBar').style.display = 'none';
@@ -874,7 +1112,7 @@
             const companyData = VimtraTools.COMPANIES[companyKey] || VimtraTools.COMPANIES['startekpro'];
 
             const salutation = document.getElementById('salutation').value;
-            const fullName = document.getElementById('fullName').value || 'Varanasi Nikhila';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
             const empId = document.getElementById('empId').value || 'STARTEK-089';
             const designation = document.getElementById('designation').value || 'OPT Recruiter';
             const department = document.getElementById('department').value || 'Sales';
@@ -883,19 +1121,24 @@
             const dojRaw = document.getElementById('doj').value;
             const lwdRaw = document.getElementById('lwd').value;
             const issueDateRaw = document.getElementById('issueDate').value;
+            const terminationDateRaw = document.getElementById('terminationDate') ? document.getElementById('terminationDate').value : '2026-08-31';
 
             const dojNumeric = formatNumericDate(dojRaw);
             const lwdNumeric = formatNumericDate(lwdRaw);
             
-            const issueDateOrdinal = formatOrdinalDate(issueDateRaw, true); // Date: 16th June 2026.
-            const lwdOrdinal = formatOrdinalDate(lwdRaw, false); // 12th June 2026
+            const issueDateOrdinal = formatOrdinalDate(issueDateRaw, true);
+            const lwdOrdinal = formatOrdinalDate(lwdRaw, false);
+            const terminationDateWords = formatOrdinalDate(terminationDateRaw, false) || '31st August 2026';
 
             const pronouns = getPronouns(salutation);
-            const fullTitleName = `${salutation} ${fullName}`;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullTitleName = `${salutationPrefix}${fullName}`;
 
-            // Base Path for logos
+            // Check if Base64 assets exist for zero-CORS / zero-taint canvas rendering
             const basePath = VimtraTools.getBasePath();
-            const logoPath = basePath + companyData.logo;
+            const baseAssets = (window.COMPANY_ASSETS && window.COMPANY_ASSETS[companyKey]) ? window.COMPANY_ASSETS[companyKey] : null;
+
+            const logoPath = (baseAssets && baseAssets.logo) ? baseAssets.logo : (basePath + companyData.logo);
 
             // Company specific legal names & footers
             let companyLegalName = 'STARTEKPRO PVT LTD';
@@ -903,28 +1146,59 @@
             let addressText = '07th Floor, DSL Abacus IT Park, Beside DSL Virtue Mall, Uppal Khalsa Village, IDA Uppal, Hyderabad-39';
             let contactText = 'Ph: +91 98480 00124 | Email: info@startechnologys.com | Website: startechnologys.com.';
             let isStartek = (companyKey === 'startekpro');
+            let isTekcog = (companyKey === 'tekcog');
+
+            let relievingForText = `For ${companyLegalName}`;
+            let experienceForText = `For ${companyLegalName}`;
+            let expTitleText = 'EXPERIENCE CERTIFICATE';
+            let dateDisplayStr = `Date: ${issueDateOrdinal}`;
 
             if (companyKey === 'vimtra') {
                 companyLegalName = 'VIMTRA VENTURES LLC';
                 companyFullName = 'Vimtra Ventures';
                 addressText = '45 Rockefeller plaza, Suite 2000, New York, 10111, USA';
                 contactText = 'Email: info@vimtra.com | Website: vimtra.com';
+                relievingForText = 'For VIMTRA VENTURES LLC';
+                experienceForText = 'For VIMTRA VENTURES LLC';
+                expTitleText = 'EXPERIENCE CERTIFICATE';
+                dateDisplayStr = `Date: ${issueDateOrdinal}`;
+            } else if (companyKey === 'tekcog') {
+                companyLegalName = 'Tekcog Pvt Ltd.';
+                companyFullName = 'Tekcog Pvt Ltd';
+                addressText = 'Tekcog Pvt Ltd , Av Hub 1st Floor, Trendz Axis Building, Hyderabad, Telangana 500081';
+                contactText = 'CIN: U72900TG2022PTC165689';
+                relievingForText = 'For Tekcog Pvt Ltd.';
+                experienceForText = 'For Tekcog Pvt Ltd';
+                expTitleText = 'EXPERIENCE LETTER';
+                dateDisplayStr = `Date: ${formatNumericDate(issueDateRaw) || issueDateOrdinal}`;
+            }
+
+            // --- UPDATE TITLES & TAB TEXT ---
+            const expDocTitleEl = document.getElementById('experienceDocTitle');
+            if (expDocTitleEl) expDocTitleEl.textContent = expTitleText;
+            const expTabBtn = document.getElementById('expTabBtn');
+            if (expTabBtn) expTabBtn.textContent = (isTekcog ? 'Experience Letter' : 'Experience Certificate');
+
+            // --- SHOW / HIDE CTC ROW (Tekcog omits CTC row) ---
+            const expSalaryRow = document.getElementById('expSalaryRow');
+            if (expSalaryRow) {
+                expSalaryRow.style.display = isTekcog ? 'none' : 'flex';
             }
 
             // --- UPDATE RELIEVING LETTER ---
             document.getElementById('relievingLogo').src = logoPath;
-            document.getElementById('relievingDate').textContent = `Date: ${issueDateOrdinal}`;
+            document.getElementById('relievingDate').textContent = dateDisplayStr;
             document.getElementById('relievingPara1').textContent = 
                 `This is to certify that ${fullTitleName} was employed with us as an ${designation} from ${dojNumeric} to ${lwdNumeric} and has been relieved from ${pronouns.possessive} duties as of closing hours on ${lwdNumeric}.`;
             document.getElementById('relievingPara2').textContent = 
                 `${fullTitleName} was designated as ${designation} at the time of ${pronouns.possessive} leaving the organization.`;
             document.getElementById('relievingPara3').textContent = 
                 `We wish ${pronouns.objective} all the best in ${pronouns.possessive} future endeavors.`;
-            document.getElementById('relievingSignFor').textContent = `For ${companyLegalName}`;
+            document.getElementById('relievingSignFor').textContent = relievingForText;
 
-            // --- UPDATE EXPERIENCE CERTIFICATE ---
+            // --- UPDATE EXPERIENCE LETTER / CERTIFICATE ---
             document.getElementById('experienceLogo').src = logoPath;
-            document.getElementById('experienceDate').textContent = `Date: ${issueDateOrdinal}`;
+            document.getElementById('experienceDate').textContent = dateDisplayStr;
             document.getElementById('experiencePara1').textContent = 
                 `This is to certify that ${fullTitleName}, Emp ID ${empId} was in the employment of our organization from ${dojNumeric} to ${lwdNumeric}.`;
             document.getElementById('expFullName').textContent = fullTitleName;
@@ -932,7 +1206,23 @@
             document.getElementById('expDepartment').textContent = department;
             document.getElementById('expSalary').textContent = salary;
             document.getElementById('expLwdWords').textContent = lwdOrdinal;
-            document.getElementById('experienceSignFor').textContent = `For ${companyLegalName}`;
+            document.getElementById('experienceSignFor').textContent = experienceForText;
+
+            // --- UPDATE SIGN-OFF AUTHORISER & TITLE ---
+            ['relieving', 'experience'].forEach(prefix => {
+                const authEl = document.getElementById(prefix + 'Authorised');
+                const titleEl = document.getElementById(prefix + 'SignatoryTitle');
+                if (isTekcog) {
+                    if (authEl) authEl.textContent = 'APPIREDDY ANNAPAREDDY';
+                    if (titleEl) {
+                        titleEl.textContent = 'Director';
+                        titleEl.style.display = 'block';
+                    }
+                } else {
+                    if (authEl) authEl.textContent = 'AUTHORISED SIGNATORY';
+                    if (titleEl) titleEl.style.display = 'none';
+                }
+            });
 
             // --- HEADER & FOOTER LAYOUT SWITCHING ---
             ['relieving', 'experience'].forEach(prefix => {
@@ -955,6 +1245,21 @@
                         <div class="doc-footer-address">${addressText}</div>
                         <div class="doc-footer-contact">${contactText}</div>
                     `;
+                } else if (isTekcog) {
+                    // Tekcog: Clean centered address & CIN without red corner accent
+                    headerAddress.style.display = 'none';
+                    headerRedLine.style.display = 'none';
+                    footer.style.display = 'block';
+                    cornerAccent.style.display = 'none';
+                    dateEl.style.marginTop = '32px';
+
+                    const footerContent = document.getElementById(prefix + 'FooterContent');
+                    footerContent.innerHTML = `
+                        <div class="doc-footer-address" style="color: #333333; font-size: 11px; text-align: center; line-height: 1.5;">
+                            Tekcog Pvt Ltd , Av Hub 1st Floor, Trendz Axis Building, Hyderabad, Telangana 500081<br>
+                            CIN: U72900TG2022PTC165689
+                        </div>
+                    `;
                 } else {
                     // Vimtra Mode: Show Header Address & Red Line, Remove Footer completely
                     headerAddress.style.display = 'block';
@@ -965,9 +1270,9 @@
                 }
             });
 
-            // Determine active signature & stamp (Uploaded file overrides company default)
-            const defaultSigPath = companyData.signature ? (basePath + companyData.signature) : '';
-            const defaultStampPath = companyData.stamp ? (basePath + companyData.stamp) : '';
+            // Determine active signature & stamp (Uploaded file overrides default)
+            const defaultSigPath = (baseAssets && baseAssets.signature) ? baseAssets.signature : (companyData.signature ? (basePath + companyData.signature) : '');
+            const defaultStampPath = (baseAssets && baseAssets.stamp) ? baseAssets.stamp : (companyData.stamp ? (basePath + companyData.stamp) : '');
 
             const activeSigUrl = uploadedSigUrl || defaultSigPath;
             const activeStampUrl = uploadedStampUrl || defaultStampPath;
@@ -977,6 +1282,30 @@
                 const sigImg = document.getElementById(prefix + 'SigImg');
                 const stampImg = document.getElementById(prefix + 'StampImg');
                 const placeholder = document.getElementById(prefix + 'SignPlaceholder');
+
+                if (isTekcog) {
+                    sigImg.style.maxHeight = '54px';
+                    sigImg.style.maxWidth = '185px';
+                    sigImg.style.top = '20px';
+                    sigImg.style.left = '0px';
+
+                    stampImg.style.maxHeight = '92px';
+                    stampImg.style.maxWidth = '130px';
+                    stampImg.style.top = '1px';
+                    stampImg.style.left = '85px';
+                    stampImg.style.opacity = '0.88';
+                } else {
+                    sigImg.style.maxHeight = '65px';
+                    sigImg.style.maxWidth = '150px';
+                    sigImg.style.top = '15px';
+                    sigImg.style.left = '0px';
+
+                    stampImg.style.maxHeight = '95px';
+                    stampImg.style.maxWidth = '140px';
+                    stampImg.style.top = '0px';
+                    stampImg.style.left = '75px';
+                    stampImg.style.opacity = '0.9';
+                }
 
                 if (activeSigUrl) {
                     sigImg.src = activeSigUrl;
@@ -999,11 +1328,25 @@
                 }
             });
 
-            // --- UPDATE EMAIL TEMPLATE ---
+            // --- UPDATE EMAIL TEMPLATE 1: RELIEVING & EXPERIENCE ---
             document.getElementById('emailSubject').textContent = `Relieving & Experience Documents - ${fullName} (${empId})`;
             document.getElementById('emailSalutation').textContent = salutation;
             document.getElementById('emailName').textContent = fullName;
             document.getElementById('emailCompanyFooter').textContent = companyFullName;
+
+            // --- UPDATE EMAIL TEMPLATE 2: TERMINATION NOTICE ---
+            const termSubjectEl = document.getElementById('termSubject');
+            if (termSubjectEl) termSubjectEl.textContent = `Notice of Termination - ${fullName} (${empId})`;
+            const termSalutationEl = document.getElementById('termSalutation');
+            if (termSalutationEl) termSalutationEl.textContent = salutation;
+            const termNameEl = document.getElementById('termName');
+            if (termNameEl) termNameEl.textContent = fullName;
+            const termCompanyLegalEl = document.getElementById('termCompanyLegal');
+            if (termCompanyLegalEl) termCompanyLegalEl.textContent = companyLegalName;
+            const termEffectiveDateEl = document.getElementById('termEffectiveDateText');
+            if (termEffectiveDateEl) termEffectiveDateEl.textContent = terminationDateWords;
+            const termCompanyFooterEl = document.getElementById('termCompanyFooter');
+            if (termCompanyFooterEl) termCompanyFooterEl.textContent = companyFullName;
         }
 
         // Handle Image Uploads
@@ -1031,13 +1374,17 @@
             }
         });
 
-        // PDF Download using html2pdf (Scrolls to top to prevent Y-offset whitespace, captures visible element)
+        // PDF Download using html2pdf with full A4 canvas fit & empty page prevention
         function downloadPDF() {
             const containerId = (currentTab === 'relieving') ? 'relievingDocContainer' : 'experienceDocContainer';
-            const fileName = (currentTab === 'relieving') ? 'Relieving-Letter.pdf' : 'Experience-Certificate.pdf';
+            const companyKey = document.getElementById('companySelect').value;
+            const companyPrefix = (companyKey === 'tekcog') ? 'Tekcog' : ((companyKey === 'vimtra') ? 'Vimtra' : 'Startekpro');
+            const docType = (currentTab === 'relieving') ? 'Relieving-Letter' : (companyKey === 'tekcog' ? 'Experience-Letter' : 'Experience-Certificate');
+            const fileName = `${companyPrefix}-${docType}.pdf`;
             const element = document.getElementById(containerId);
 
-            // Temporarily scroll to top (0, 0) so html2canvas captures with 0 top offset
+            if (!element) return;
+
             const savedScrollY = window.scrollY;
             window.scrollTo(0, 0);
 
@@ -1048,7 +1395,9 @@
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
+                    allowTaint: true,
                     logging: false,
+                    backgroundColor: '#ffffff',
                     scrollX: 0,
                     scrollY: 0,
                     onclone: function(clonedDoc) {
@@ -1056,20 +1405,37 @@
                         if (target) {
                             target.style.boxShadow = 'none';
                             target.style.borderRadius = '0';
+                            target.style.margin = '0';
+                            // Constrain clone precisely to 295mm to prevent subpixel height rounding from creating a blank 2nd page
+                            target.style.height = '295mm';
+                            target.style.maxHeight = '295mm';
+                            target.style.minHeight = '295mm';
+                            target.style.overflow = 'hidden';
+                            target.style.boxSizing = 'border-box';
                         }
                     }
                 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                window.scrollTo(0, savedScrollY);
-            }).catch(err => {
-                console.error(err);
-                window.scrollTo(0, savedScrollY);
-            });
+            VimtraTools.showToast('Generating A4 PDF download...', 'success');
 
-            VimtraTools.showToast('Generating PDF download...', 'success');
+            html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+                // Ensure strictly 1 single page by removing any excess trailing blank pages
+                const totalPages = pdf.internal.getNumberOfPages();
+                if (totalPages > 1) {
+                    for (let p = totalPages; p > 1; p--) {
+                        pdf.deletePage(p);
+                    }
+                }
+                pdf.save(fileName);
+                window.scrollTo(0, savedScrollY);
+                VimtraTools.showToast('PDF downloaded successfully (1 page)!', 'success');
+            }).catch(err => {
+                console.error('PDF error:', err);
+                window.scrollTo(0, savedScrollY);
+                VimtraTools.showToast('Error generating PDF. You can also click "Print" -> Save as PDF.', 'error');
+            });
         }
 
         // Print Document
@@ -1077,19 +1443,81 @@
             window.print();
         }
 
-        // Open Gmail Draft in browser tab with prefilled Subject and Body
-        function sendEmailDraft() {
+        // Email Generators for Rich Copy and Drafts
+        function getRelievingEmailHtml() {
             const salutation = document.getElementById('salutation').value;
-            const fullName = document.getElementById('fullName').value || 'Varanasi Nikhila';
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
             const empId = document.getElementById('empId').value || 'STARTEK-089';
             const companyKey = document.getElementById('companySelect').value;
-            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : 'STARTEKPRO Private Limited';
-
+            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd' : 'STARTEKPRO Private Limited');
+            const headerGradient = (companyKey === 'tekcog') ? 'linear-gradient(135deg, #00CED1 0%, #008B8B 100%)' : ((companyKey === 'vimtra') ? 'linear-gradient(135deg, #C41E3A 0%, #9A1830 100%)' : 'linear-gradient(135deg, #e31e24 0%, #a61217 100%)');
+            const brandColor = (companyKey === 'tekcog') ? '#008B8B' : ((companyKey === 'vimtra') ? '#C41E3A' : '#e31e24');
             const subject = `Relieving & Experience Documents - ${fullName} (${empId})`;
+
+            return `
+<div style="max-width: 650px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; font-family: 'Inter', Arial, Helvetica, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    <div style="background: ${headerGradient}; padding: 20px 24px; color: #ffffff;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.85; margin-bottom: 4px; font-weight: 600;">EMAIL SUBJECT</div>
+        <div style="font-size: 15px; font-weight: 700; color: #ffffff;">${subject}</div>
+    </div>
+    <div style="padding: 28px 24px; color: #2d3748; font-size: 14px; line-height: 1.7;">
+        <p style="margin: 0 0 16px 0;">Dear ${salutationPrefix}${fullName},</p>
+        <p style="margin: 0 0 16px 0;">Greetings!</p>
+        <p style="margin: 0 0 10px 0;">Please find attached the following documents for your reference:</p>
+        <ul style="margin: 0 0 18px 0; padding-left: 24px; color: #4a5568;">
+            <li style="margin-bottom: 4px;">Relieving Letter</li>
+            <li style="margin-bottom: 4px;">Experience Certificate</li>
+            <li style="margin-bottom: 4px;">Payslips</li>
+        </ul>
+        <p style="margin: 0 0 16px 0;">We would also like to confirm that all your dues have been cleared, and there are no pending payments or recoveries from either side.</p>
+        <p style="margin: 0 0 16px 0;">If you require any further assistance or have any additional queries, please feel free to reach out to us.</p>
+        <p style="margin: 0 0 24px 0;">We wish you all the very best in your future endeavors.</p>
+        <p style="margin: 0 0 4px 0; color: #718096;">Best regards,</p>
+        <p style="margin: 0; font-weight: 700; color: #1a202c;">HR Team<br><span style="color: ${brandColor};">${companyFullName}</span></p>
+    </div>
+</div>`;
+        }
+
+        function getTerminationEmailHtml() {
+            const salutation = document.getElementById('salutation').value;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
+            const empId = document.getElementById('empId').value || 'STARTEK-089';
+            const companyKey = document.getElementById('companySelect').value;
+            const companyLegalName = (companyKey === 'vimtra') ? 'Vimtra Ventures LLC' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd.' : 'Startekpro Pvt Ltd');
+            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd' : 'STARTEKPRO Private Limited');
             
-            const bodyText = `Dear ${salutation} ${fullName},\n\n` +
+            const terminationDateRaw = document.getElementById('terminationDate') ? document.getElementById('terminationDate').value : '2026-08-31';
+            const terminationDateWords = formatOrdinalDate(terminationDateRaw, false) || '31st August 2026';
+            const subject = `Notice of Termination - ${fullName} (${empId})`;
+
+            return `
+<div style="max-width: 650px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; font-family: 'Inter', Arial, Helvetica, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+    <div style="background: linear-gradient(135deg, #c53030 0%, #742a2a 100%); padding: 20px 24px; color: #ffffff;">
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.85; margin-bottom: 4px; font-weight: 600;">EMAIL SUBJECT</div>
+        <div style="font-size: 15px; font-weight: 700; color: #ffffff;">${subject}</div>
+    </div>
+    <div style="padding: 28px 24px; color: #2d3748; font-size: 14px; line-height: 1.7;">
+        <p style="margin: 0 0 16px 0;">Dear ${salutationPrefix}${fullName},</p>
+        <p style="margin: 0 0 16px 0; line-height: 1.8;">We deeply regret to inform you that in continuation with the earlier communication and non-performance for last few months. We have to terminate your employment with <strong>${companyLegalName}</strong> effective closing hours of <strong>${terminationDateWords}</strong>.</p>
+        <p style="margin: 0 0 24px 0;">We wish you good luck in your future endeavors.</p>
+        <p style="margin: 0 0 4px 0; color: #718096;">Best regards,</p>
+        <p style="margin: 0; font-weight: 700; color: #1a202c;">HR Team<br><span style="color: #c53030;">${companyFullName}</span></p>
+    </div>
+</div>`;
+        }
+
+        function getRelievingEmailPlainText() {
+            const salutation = document.getElementById('salutation').value;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
+            const companyKey = document.getElementById('companySelect').value;
+            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd' : 'STARTEKPRO Private Limited');
+            
+            return `Dear ${salutationPrefix}${fullName},\n\n` +
                 `Greetings!\n\n` +
-                `Please find attached the following documents for your reference:\n\n` +
+                `Please find attached the following documents for your reference:\n` +
                 `• Relieving Letter\n` +
                 `• Experience Certificate\n` +
                 `• Payslips\n\n` +
@@ -1099,10 +1527,100 @@
                 `Best regards,\n` +
                 `HR Team\n` +
                 `${companyFullName}`;
+        }
+
+        function getTerminationEmailPlainText() {
+            const salutation = document.getElementById('salutation').value;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
+            const companyKey = document.getElementById('companySelect').value;
+            const companyLegalName = (companyKey === 'vimtra') ? 'Vimtra Ventures LLC' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd.' : 'Startekpro Pvt Ltd');
+            const companyFullName = (companyKey === 'vimtra') ? 'Vimtra Ventures' : (companyKey === 'tekcog' ? 'Tekcog Pvt Ltd' : 'STARTEKPRO Private Limited');
+            const terminationDateRaw = document.getElementById('terminationDate') ? document.getElementById('terminationDate').value : '2026-08-31';
+            const terminationDateWords = formatOrdinalDate(terminationDateRaw, false) || '31st August 2026';
+            
+            return `Dear ${salutationPrefix}${fullName},\n\n` +
+                `We deeply regret to inform you that in continuation with the earlier communication and non-performance for last few months. We have to terminate your employment with ${companyLegalName} effective closing hours of ${terminationDateWords}.\n\n` +
+                `We wish you good luck in your future endeavors.\n\n` +
+                `Best regards,\n` +
+                `HR Team\n` +
+                `${companyFullName}`;
+        }
+
+        // Copy rich HTML email card to clipboard
+        async function copyEmailHtml(type) {
+            const htmlContent = (type === 'relieving') ? getRelievingEmailHtml() : getTerminationEmailHtml();
+            const textContent = (type === 'relieving') ? getRelievingEmailPlainText() : getTerminationEmailPlainText();
+
+            let copied = false;
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                    const blobText = new Blob([textContent], { type: 'text/plain' });
+                    const data = [new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })];
+                    await navigator.clipboard.write(data);
+                    copied = true;
+                } catch (clipErr) {
+                    console.warn('navigator.clipboard.write failed, trying execCommand fallback:', clipErr);
+                }
+            }
+
+            if (!copied) {
+                try {
+                    const el = document.createElement('div');
+                    el.innerHTML = htmlContent;
+                    el.style.position = 'fixed';
+                    el.style.left = '-9999px';
+                    el.style.top = '0';
+                    document.body.appendChild(el);
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    document.execCommand('copy');
+                    sel.removeAllRanges();
+                    document.body.removeChild(el);
+                    copied = true;
+                } catch (fallbackErr) {
+                    console.error('execCommand copy failed:', fallbackErr);
+                }
+            }
+
+            const label = (type === 'relieving') ? 'Relieving' : 'Termination';
+            if (copied) {
+                VimtraTools.showToast(`${label} email copied as HTML! Paste directly into Gmail / Outlook (Ctrl+V).`, 'success');
+            } else {
+                VimtraTools.showToast('Could not copy automatically. Please copy text manually.', 'error');
+            }
+        }
+
+        // Open Gmail Draft for Relieving
+        function sendEmailDraft() {
+            const salutation = document.getElementById('salutation').value;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
+            const empId = document.getElementById('empId').value || 'STARTEK-089';
+            const subject = `Relieving & Experience Documents - ${fullName} (${empId})`;
+            const bodyText = getRelievingEmailPlainText();
 
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
             window.open(gmailUrl, '_blank');
             VimtraTools.showToast('Opening Gmail web draft...', 'success');
+        }
+
+        // Open Gmail Draft for Termination
+        function sendTerminationEmailDraft() {
+            const salutation = document.getElementById('salutation').value;
+            const salutationPrefix = salutation ? salutation + ' ' : '';
+            const fullName = document.getElementById('fullName').value || 'Kodimyala Soumya Sri';
+            const empId = document.getElementById('empId').value || 'STARTEK-089';
+            const subject = `Notice of Termination - ${fullName} (${empId})`;
+            const bodyText = getTerminationEmailPlainText();
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+            window.open(gmailUrl, '_blank');
+            VimtraTools.showToast('Opening Gmail web draft for termination...', 'success');
         }
 
         // Event Listeners for Live Form Input
@@ -1117,7 +1635,57 @@
             const companySelect = document.getElementById('companySelect');
             if (companySelect) {
                 companySelect.addEventListener('change', (e) => {
-                    VimtraTools.setCompany(e.target.value);
+                    const newCompany = e.target.value;
+                    VimtraTools.setCompany(newCompany);
+
+                    // If fields match standard sample values, auto-switch to company sample
+                    const curName = document.getElementById('fullName').value.trim();
+                    const curEmp = document.getElementById('empId').value.trim();
+                    const isDefaultStartek = (curName === 'Kodimyala Soumya Sri' || curEmp === 'STARTEK-089');
+                    const isDefaultTekcog = (curName === 'Vamshi Madireddy' || curEmp === 'TC0035');
+                    const isDefaultVimtra = (curName === 'Varanasi Nikhila' || curEmp === 'VIM-102');
+
+                    if (newCompany === 'tekcog' && (isDefaultStartek || isDefaultVimtra)) {
+                        document.getElementById('salutation').value = 'Mr.';
+                        document.getElementById('fullName').value = 'Vamshi Madireddy';
+                        document.getElementById('empId').value = 'TC0035';
+                        document.getElementById('designation').value = 'Operations Manager';
+                        document.getElementById('department').value = 'Operations';
+                        document.getElementById('salary').value = '4,80,000/-';
+                        document.getElementById('doj').value = '2022-01-21';
+                        document.getElementById('lwd').value = '2023-03-26';
+                        document.getElementById('issueDate').value = '2025-04-15';
+                        if (document.getElementById('terminationDate')) {
+                            document.getElementById('terminationDate').value = '2023-03-26';
+                        }
+                    } else if (newCompany === 'startekpro' && (isDefaultTekcog || isDefaultVimtra)) {
+                        document.getElementById('salutation').value = 'Ms.';
+                        document.getElementById('fullName').value = 'Kodimyala Soumya Sri';
+                        document.getElementById('empId').value = 'STARTEK-089';
+                        document.getElementById('designation').value = 'OPT Recruiter';
+                        document.getElementById('department').value = 'Sales';
+                        document.getElementById('salary').value = '2,40,000/-';
+                        document.getElementById('doj').value = '2026-02-01';
+                        document.getElementById('lwd').value = '2026-08-31';
+                        document.getElementById('issueDate').value = '2026-10-12';
+                        if (document.getElementById('terminationDate')) {
+                            document.getElementById('terminationDate').value = '2026-08-31';
+                        }
+                    } else if (newCompany === 'vimtra' && (isDefaultStartek || isDefaultTekcog)) {
+                        document.getElementById('salutation').value = 'Ms.';
+                        document.getElementById('fullName').value = 'Varanasi Nikhila';
+                        document.getElementById('empId').value = 'VIM-102';
+                        document.getElementById('designation').value = 'OPT Recruiter';
+                        document.getElementById('department').value = 'Sales';
+                        document.getElementById('salary').value = '3,60,000/-';
+                        document.getElementById('doj').value = '2025-06-17';
+                        document.getElementById('lwd').value = '2026-06-12';
+                        document.getElementById('issueDate').value = '2026-06-16';
+                        if (document.getElementById('terminationDate')) {
+                            document.getElementById('terminationDate').value = '2026-06-12';
+                        }
+                    }
+
                     updatePreviews();
                 });
             }

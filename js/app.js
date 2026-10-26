@@ -22,10 +22,17 @@ const COMPANIES = {
     },
     tekcog: {
         name: 'Tekcog',
-        logo: 'logos/tekcog.png',
+        legalName: 'Tekcog Pvt Ltd.',
+        fullName: 'Tekcog Pvt Ltd',
+        logo: 'logos/tlogo512.png',
+        signature: 'assets/signs&stamps/tekcog/Appi Reddy_2.png',
+        stamp: 'assets/signs&stamps/tekcog/Tekcog.png',
+        signatoryName: 'APPIREDDY ANNAPAREDDY',
+        signatoryTitle: 'Director',
         theme: 'theme-tekcog',
         website: 'tekcog.com',
-        address: '3300 Dallas Parkway, Plano, TX 75093, USA'
+        address: 'Tekcog Pvt Ltd , Av Hub 1st Floor, Trendz Axis Building, Hyderabad, Telangana 500081',
+        cin: 'CIN: U72900TG2022PTC165689'
     },
     insight: {
         name: 'Insight Intelli',
