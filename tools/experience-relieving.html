@@ -215,6 +215,19 @@
             background: var(--primary-light);
         }
 
+        .btn-action.btn-combined-action {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-action.btn-combined-action:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-color: #10b981;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+
         /* A4 Document Box - Standard A4 210mm x 297mm */
         .a4-document {
             background: #ffffff;
@@ -775,6 +788,16 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                         Download PDF
+                    </button>
+                    <button type="button" class="btn-action btn-combined-action" id="combinedDownloadBtn" onclick="downloadCombinedPDF()" title="Download both Relieving and Experience letters as a combined 2-page PDF">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Combined Download
                     </button>
                     <button type="button" class="btn-action" onclick="printDoc()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1412,7 +1435,9 @@
             const companyKey = document.getElementById('companySelect').value;
             const companyPrefix = (companyKey === 'tekcog') ? 'Tekcog' : ((companyKey === 'vimtra') ? 'Vimtra' : 'Startekpro');
             const docType = (currentTab === 'relieving') ? 'Relieving-Letter' : (companyKey === 'tekcog' ? 'Experience-Letter' : 'Experience-Certificate');
-            const fileName = `${companyPrefix}-${docType}.pdf`;
+            const rawName = document.getElementById('fullName').value.trim() || 'Employee';
+            const cleanName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const fileName = `${companyPrefix}-${cleanName}-${docType}.pdf`;
             const element = document.getElementById(containerId);
 
             if (!element) return;
@@ -1467,6 +1492,114 @@
                 console.error('PDF error:', err);
                 window.scrollTo(0, savedScrollY);
                 VimtraTools.showToast('Error generating PDF. You can also click "Print" -> Save as PDF.', 'error');
+            });
+        }
+
+        // Combined PDF Download (Page 1: Relieving Letter, Page 2: Experience Letter)
+        function downloadCombinedPDF() {
+            const companyKey = document.getElementById('companySelect').value;
+            const companyPrefix = (companyKey === 'tekcog') ? 'Tekcog' : ((companyKey === 'vimtra') ? 'Vimtra' : 'Startekpro');
+            const rawName = document.getElementById('fullName').value.trim() || 'Employee';
+            const cleanName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const fileName = `${companyPrefix}-${cleanName}-Combined-Letters.pdf`;
+
+            const relievingElement = document.getElementById('relievingDocContainer');
+            const experienceElement = document.getElementById('experienceDocContainer');
+
+            if (!relievingElement || !experienceElement) return;
+
+            const savedScrollY = window.scrollY;
+            window.scrollTo(0, 0);
+
+            // Create temporary container attached to preview-wrapper to inherit styling/fonts
+            let combinedWrapper = document.getElementById('combinedExportContainer');
+            if (!combinedWrapper) {
+                combinedWrapper = document.createElement('div');
+                combinedWrapper.id = 'combinedExportContainer';
+                const previewWrapper = document.querySelector('.preview-wrapper') || document.body;
+                previewWrapper.appendChild(combinedWrapper);
+            }
+
+            combinedWrapper.style.position = 'absolute';
+            combinedWrapper.style.left = '0';
+            combinedWrapper.style.top = '0';
+            combinedWrapper.style.width = '210mm';
+            combinedWrapper.style.zIndex = '-9999';
+            combinedWrapper.style.background = '#ffffff';
+            combinedWrapper.style.display = 'block';
+            combinedWrapper.innerHTML = '';
+
+            // Clone Page 1 (Relieving Letter)
+            const p1 = relievingElement.cloneNode(true);
+            p1.id = 'exportPage1';
+            p1.style.boxShadow = 'none';
+            p1.style.borderRadius = '0';
+            p1.style.margin = '0 auto';
+            p1.style.height = '295mm';
+            p1.style.maxHeight = '295mm';
+            p1.style.minHeight = '295mm';
+            p1.style.overflow = 'hidden';
+            p1.style.boxSizing = 'border-box';
+            p1.style.pageBreakAfter = 'always';
+            p1.style.breakAfter = 'page';
+
+            // Clone Page 2 (Experience Letter)
+            const p2 = experienceElement.cloneNode(true);
+            p2.id = 'exportPage2';
+            p2.style.boxShadow = 'none';
+            p2.style.borderRadius = '0';
+            p2.style.margin = '0 auto';
+            p2.style.height = '295mm';
+            p2.style.maxHeight = '295mm';
+            p2.style.minHeight = '295mm';
+            p2.style.overflow = 'hidden';
+            p2.style.boxSizing = 'border-box';
+            p2.style.pageBreakAfter = 'avoid';
+            p2.style.breakAfter = 'avoid';
+
+            combinedWrapper.appendChild(p1);
+            combinedWrapper.appendChild(p2);
+
+            const opt = {
+                margin: 0,
+                filename: fileName,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    scrollX: 0,
+                    scrollY: 0
+                },
+                pagebreak: { mode: ['css', 'legacy'] },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            VimtraTools.showToast('Generating Combined 2-Page PDF (Relieving & Experience)...', 'success');
+
+            html2pdf().set(opt).from(combinedWrapper).toPdf().get('pdf').then(function(pdf) {
+                // Ensure strictly 2 pages by removing any excess trailing blank pages
+                const totalPages = pdf.internal.getNumberOfPages();
+                if (totalPages > 2) {
+                    for (let p = totalPages; p > 2; p--) {
+                        pdf.deletePage(p);
+                    }
+                }
+                pdf.save(fileName);
+                combinedWrapper.style.display = 'none';
+                combinedWrapper.innerHTML = '';
+                window.scrollTo(0, savedScrollY);
+                VimtraTools.showToast('Combined PDF downloaded successfully (2 pages)!', 'success');
+            }).catch(err => {
+                console.error('Combined PDF error:', err);
+                if (combinedWrapper) {
+                    combinedWrapper.style.display = 'none';
+                    combinedWrapper.innerHTML = '';
+                }
+                window.scrollTo(0, savedScrollY);
+                VimtraTools.showToast('Error generating Combined PDF.', 'error');
             });
         }
 
