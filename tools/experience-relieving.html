@@ -737,8 +737,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Signatory Title / Designation</label>
-                                <input type="text" id="signatoryTitleInput" class="form-input" placeholder="HR (Default)">
-                                <small style="color: var(--text-muted); font-size: 11px;">Default: HR for Tekcog (type to override)</small>
+                                <input type="text" id="signatoryTitleInput" class="form-input" placeholder="HR Manager (Default)">
+                                <small style="color: var(--text-muted); font-size: 11px;">Default: HR Manager for Tekcog (type to override)</small>
                             </div>
                         </div>
 
@@ -1234,7 +1234,7 @@
 
             if (isTekcog) {
                 defaultAuthName = 'Pravalika Reddy Ponnapu';
-                defaultAuthTitle = 'HR';
+                defaultAuthTitle = 'HR Manager';
             }
 
             const effectiveAuthName = customSignatoryName || defaultAuthName;
@@ -1720,7 +1720,7 @@
 
                     if (newCompany === 'tekcog') {
                         if (document.getElementById('signatoryNameInput')) document.getElementById('signatoryNameInput').placeholder = 'Pravalika Reddy Ponnapu (Default)';
-                        if (document.getElementById('signatoryTitleInput')) document.getElementById('signatoryTitleInput').placeholder = 'HR (Default)';
+                        if (document.getElementById('signatoryTitleInput')) document.getElementById('signatoryTitleInput').placeholder = 'HR Manager (Default)';
                     } else {
                         if (document.getElementById('signatoryNameInput')) document.getElementById('signatoryNameInput').placeholder = 'AUTHORISED SIGNATORY (Default)';
                         if (document.getElementById('signatoryTitleInput')) document.getElementById('signatoryTitleInput').placeholder = 'Leave blank for none';

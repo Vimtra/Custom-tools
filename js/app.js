@@ -28,7 +28,7 @@ const COMPANIES = {
         signature: 'assets/signs&stamps/tekcog/Pravalika Tekcog HR.png',
         stamp: 'assets/signs&stamps/tekcog/Tekcog.png',
         signatoryName: 'Pravalika Reddy Ponnapu',
-        signatoryTitle: 'HR',
+        signatoryTitle: 'HR Manager',
         theme: 'theme-tekcog',
         website: 'tekcog.com',
         address: 'Tekcog Pvt Ltd , Av Hub 1st Floor, Trendz Axis Building, Hyderabad, Telangana 500081',
